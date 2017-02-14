@@ -1,3 +1,5 @@
 /img/*.png
 /png/*.png
 debug.log
+/.vscode/
+/not_exist.csv

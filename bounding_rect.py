@@ -57,11 +57,11 @@ def calcRect(img):
 files = os.listdir("png")
 # すべての画像を読み込み、最小の矩形領域を抽出
 for filename in files:
-    root, ext = os.path.splitext(path)
-    if not ext == "png": continue
+    root, ext = os.path.splitext(filename)
+    if not ext == ".png": continue
 
     img = cv2.imread("png/" + filename)
-    print(finename)
+    print(filename)
     x, y, width, height = calcRect(img)
     dst = img[y:y + height, x:x + width]
     cv2.imwrite("img/" + filename, dst)
