@@ -1,3 +1,7 @@
+'''
+pngディレクトリにある画像から、白を除いた最小矩形の画像を生成する
+'''
+
 import cv2
 import os
 
@@ -54,14 +58,14 @@ def calcRect(img):
 
     return left, top, (right - left), (bottom - top)
 
-files = os.listdir("png")
+files = os.listdir("../png")
 # すべての画像を読み込み、最小の矩形領域を抽出
 for filename in files:
-    root, ext = os.path.splitext(filename)
+    base, ext = os.path.splitext(filename)
     if not ext == ".png": continue
 
-    img = cv2.imread("png/" + filename)
+    img = cv2.imread("../png/" + filename)
     print(filename)
     x, y, width, height = calcRect(img)
     dst = img[y:y + height, x:x + width]
-    cv2.imwrite("img/" + filename, dst)
+    cv2.imwrite("../img/" + filename, dst)

@@ -1,3 +1,7 @@
+'''
+gifディレクトリにある画像の全フレームをpng画像化する
+'''
+
 import cv2
 import os
 import re
@@ -14,7 +18,7 @@ def read_gif_all(filename):
     return result
 
 count = 0
-files = os.listdir('gif')
+files = os.listdir('../gif')
 for filename in files:
     # 拡張子を除いた画像名を取得
     imgname, _ = os.path.splitext(filename)
@@ -29,9 +33,9 @@ for filename in files:
 
     print(imgname)
     # gifの全フレームを読み込んで画像配列を作成
-    imgList = read_gif_all("gif/" + filename)
+    imgList = read_gif_all("../gif/" + filename)
 
     for img in imgList:
         # countは重複回避のためにつけられるため、値自体に意味はない
-        cv2.imwrite("png/" + imgname + "_" + str(count) + ".png", img)
+        cv2.imwrite("../png/" + imgname + "_" + str(count) + ".png", img)
         count += 1
