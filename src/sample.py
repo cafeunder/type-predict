@@ -7,17 +7,12 @@ import cv2
 
 # 辞書を読み込む
 dict = {}
-for line in open("../dictionary_utf8.csv", "r"):
+for line in open("../dictionary.csv", "r"):
     record = line.split(",")
     type = list()
-    if len(record) == 2:
-        type.append(record[1][:-1])
-    elif len(record) == 3:
-        type.append(record[1])
+    type.append(record[1])
+    if not record[2][:-1] == "":
         type.append(record[2][:-1])
-    else:
-        print("invalid record '" + line +"'")
-        continue
     dict[record[0]] = type
 
 # 画像を読み込む

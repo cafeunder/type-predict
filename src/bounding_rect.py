@@ -8,7 +8,6 @@ import os
 
 large_value = 10000000
 # 白を除いた場合の最小矩形領域を計算する
-# ひどすぎるのでなんとかしたい
 def calcRect(img):
     # 背景は(255,255,255)である前提でグレースケール化
     gray = np.array(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY))
