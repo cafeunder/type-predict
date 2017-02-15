@@ -2,6 +2,7 @@
 pngディレクトリにある画像から、白を除いた最小矩形の画像を生成する
 '''
 
+import numpy as np
 import cv2
 import os
 
@@ -10,51 +11,13 @@ large_value = 10000000
 # ひどすぎるのでなんとかしたい
 def calcRect(img):
     # 背景は(255,255,255)である前提でグレースケール化
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    gray = np.array(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY))
+    gray_index = np.where(gray != 255)
 
-    left = large_value
-    for y in range(len(gray)):
-        max_x = -1
-        for x in range(len(gray[0])):
-            if gray[y][x] == 255 and max_x < x:
-                max_x = x
-            else:
-                break
-        if not max_x == -1 and max_x < left:
-            left = max_x
-
-    top = large_value
-    for x in range(len(gray[0])):
-        max_y = -1
-        for y in range(len(gray)):
-            if gray[y][x] == 255 and max_y < y:
-                max_y = y
-            else:
-                break
-        if not max_y == -1 and max_y < top:
-            top = max_y
-
-    right = -1
-    for y in range(len(gray)):
-        min_x = large_value
-        for x in range(len(gray[0]))[::-1]:
-            if gray[y][x] == 255 and min_x > x:
-                min_x = x
-            else:
-                break
-        if not min_x == large_value and min_x > right:
-            right = min_x
-
-    bottom = -1
-    for x in range(len(gray[0])):
-        min_y = large_value
-        for y in range(len(gray))[::-1]:
-            if gray[y][x] == 255 and min_y > y:
-                min_y = y
-            else:
-                break
-        if not min_y == large_value and min_y > bottom:
-            bottom = min_y
+    left = min(gray_index[1])
+    top = min(gray_index[0])
+    right = max(gray_index[1])
+    bottom = max(gray_index[0])
 
     return left, top, (right - left), (bottom - top)
 
