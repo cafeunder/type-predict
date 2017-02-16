@@ -1,7 +1,6 @@
 '''
 gifディレクトリにある画像の全フレームをpng画像化する
 '''
-
 import cv2
 import os
 import re
