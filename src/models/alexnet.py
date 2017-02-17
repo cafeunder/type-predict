@@ -16,7 +16,7 @@ class Alex(Chain):
 
     insize = 227
 
-    def __init__(self, out_size):
+    def __init__(self, out_size, train=True):
         super(Alex, self).__init__(
             # 第一層：入力のチャンネル数=3，出力のチャンネル数=96，フィルターのサイズ=(11,11)，ストライド=4
             conv1=L.Convolution2D(3, 96, 11, stride=4),
@@ -35,19 +35,15 @@ class Alex(Chain):
             # 第八層：入力次元数=4096，出力次元数=分類クラス数
             fc8=L.Linear(4096, out_size=out_size),
         )
+        self.train = train
 
-    def __call__(self, x_data, y_data, train=True):
+    def __call__(self, x):
         """
         forwardが呼び出された際に呼ばれるメソッド．
         入力データの分類結果（各クラスの確率）を返す．
-        :param x_data: 訓練データ
-        :param y_data: 教師データ
-        :param train: モデル学習時かどうか
+        :param x: 訓練データ
         :return: 分類結果
         """
-        x = chainer.Variable(x_data, volatile=not train)
-        t = chainer.Variable(y_data, volatile=not train)
-
         h = F.max_pooling_2d(F.local_response_normalization(
             F.relu(self.conv1(x))), 3, stride=2)
         h = F.max_pooling_2d(F.local_response_normalization(
@@ -55,7 +51,7 @@ class Alex(Chain):
         h = F.relu(self.conv3(h))
         h = F.relu(self.conv4(h))
         h = F.max_pooling_2d(F.relu(self.conv5(h)), 3, stride=2)
-        h = F.dropout(F.relu(self.fc6(h)), train=train)
-        h = F.dropout(F.relu(self.fc7(h)), train=train)
+        h = F.dropout(F.relu(self.fc6(h)), train=self.train)
+        h = F.dropout(F.relu(self.fc7(h)), train=self.train)
         h = self.fc8(h)
         return h
