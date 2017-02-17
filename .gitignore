@@ -3,4 +3,7 @@
 debug.log
 /.vscode/
 /not_exist.csv
+/gif/
+/src/gif_to_png.py
+/result.png
 .idea
