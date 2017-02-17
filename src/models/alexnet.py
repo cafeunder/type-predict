@@ -14,6 +14,8 @@ class Alex(Chain):
     任意の分類クラスに対応．
     """
 
+    insize = 227
+
     def __init__(self, out_size):
         super(Alex, self).__init__(
             # 第一層：入力のチャンネル数=3，出力のチャンネル数=96，フィルターのサイズ=(11,11)，ストライド=4
@@ -37,13 +39,11 @@ class Alex(Chain):
     def __call__(self, x_data, y_data, train=True):
         """
         forwardが呼び出された際に呼ばれるメソッド．
-        誤差と正答率を返す．
+        入力データの分類結果（各クラスの確率）を返す．
         :param x_data: 訓練データ
         :param y_data: 教師データ
         :param train: モデル学習時かどうか
-        :return:
-            loss: クロスエントロピー誤差
-            accuracy: 正答率
+        :return: 分類結果
         """
         x = chainer.Variable(x_data, volatile=not train)
         t = chainer.Variable(y_data, volatile=not train)
@@ -58,6 +58,4 @@ class Alex(Chain):
         h = F.dropout(F.relu(self.fc6(h)), train=train)
         h = F.dropout(F.relu(self.fc7(h)), train=train)
         h = self.fc8(h)
-        loss = F.softmax_cross_entropy(h, t)
-        accuracy = F.accuracy(h, t)
-        return loss, accuracy
+        return h
