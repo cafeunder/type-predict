@@ -1,8 +1,8 @@
-
 import os
 import cv2
 import numpy as np
 import random
+
 
 def resize_image(filename, size):
     # 拡張子を除いた画像名を取得
@@ -34,6 +34,7 @@ def resize_image(filename, size):
     dst.fill(255)
     dst[y:y + exp_height, x:x + exp_width] = expand
     return dst
+
 
 if __name__ == "__main__":
     result = resize_image("../img/absol_588.png", 256)
