@@ -1,3 +1,4 @@
+# coding:utf-8
 '''
 画像と辞書を使ったプログラムのサンプル
 '''
@@ -7,7 +8,7 @@ import cv2
 
 # 辞書を読み込む
 dict = {}
-for line in open("../dictionary.csv", "r"):
+for line in open("../dictionary.csv", "r", encoding="shift-jis"):
     record = line.split(",")
     type = list()
     type.append(record[1])
@@ -28,4 +29,5 @@ for filename in files:
         continue
 
     img = cv2.imread("../img/" + filename)
-    print(name + ":" + dict[name][0] + ":" + str(len(img[0])) + "," + str(len(img)))
+    print(name + ":" + dict[name][0] + ":" + str(len(img[0])) + "," + str(
+        len(img)))

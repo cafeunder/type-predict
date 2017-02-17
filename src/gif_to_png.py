@@ -1,21 +1,22 @@
 '''
 gifディレクトリにある画像の全フレームをpng画像化する
 '''
-
 import cv2
 import os
 import re
 import time
 
+
 # gif画像の全フレームを読み込む
 def read_gif_all(filename):
     gif = cv2.VideoCapture(filename)
     result = list()
-    while(True):
+    while (True):
         _, img = gif.read()
         if img is None: break
         result.append(img)
     return result
+
 
 count = 0
 files = os.listdir('../gif')
