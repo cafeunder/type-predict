@@ -31,7 +31,7 @@ test_iter = iterators.SerialIterator(test, batch_size=100, repeat=False,
 
 # 学習の設定
 updater = training.StandardUpdater(train_iter, optimizer)
-trainer = training.Trainer(updater, (20, 'epoch'), out='result')
+trainer = training.Trainer(updater, (20, 'epoch'), out='../result')
 # trainer = training.Trainer(updater, (10000, 'iteration'), out='result')
 
 # 学習後の評価の設定
