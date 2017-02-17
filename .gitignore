@@ -7,4 +7,6 @@ debug.log
 /src/gif_to_png.py
 /result.png
 .idea
-result
+/data/*.png
+/result/*
+__pycache__

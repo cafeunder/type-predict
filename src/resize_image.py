@@ -1,4 +1,5 @@
 # coding:utf-8
+import glob
 import os
 import cv2
 import numpy as np
@@ -38,5 +39,10 @@ def resize_image(filename, size):
 
 
 if __name__ == "__main__":
-    result = resize_image("../img/absol_588.png", 256)
-    cv2.imwrite("../result.png", result)
+    if not os.path.exists("../data"):
+        os.makedirs("../data")
+    image_list = glob.glob("../img/*.png")
+    for image in image_list:
+        print(image)
+        result = resize_image(image, 256)
+        cv2.imwrite("../data/" + image.replace("../img/", ""), result)
