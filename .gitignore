@@ -7,6 +7,10 @@ debug.log
 /src/gif_to_png.py
 /result.png
 .idea
-/data/*.png
+data
 /result/*
 __pycache__
+*.npy
+test.txt
+train.txt
+labels.txt

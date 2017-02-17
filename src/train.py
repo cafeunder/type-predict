@@ -3,22 +3,22 @@
 学習をさせるプログラム
 """
 import argparse
-
+import numpy as np
 import chainer
 import chainer.links as L
 from chainer import optimizers, iterators, training
 from chainer.datasets import tuple_dataset
 from chainer.training import extensions
-
+from src.dataset.preprocessed_dataset import PreprocessedDataset
 from src.models import alexnet
 from src.models.mlp import MLP
 
 
 def main():
     parser = argparse.ArgumentParser(description='Type Prediction: Pokemon')
-    parser.add_argument('--train', default='img',
+    parser.add_argument('--train', default='../train.txt',
                         help='Path to training image-label list file')
-    parser.add_argument('--val', default='img',
+    parser.add_argument('--val', default='../test.txt',
                         help='Path to validation image-label list file')
     parser.add_argument('--batchsize', '-B', type=int, default=32,
                         help='Number of images in each mini-batch')
@@ -26,6 +26,8 @@ def main():
                         help='Number of sweeps over the dataset to train')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--mean', '-m', default='../mean_train.npy',
+                        help='Mean file (computed by compute_mean.py)')
     parser.add_argument('--initmodel',
                         help='Initialize the model from given file')
     parser.add_argument('--out', '-o', default='../result',
@@ -37,8 +39,10 @@ def main():
     args = parser.parse_args()
 
     # 学習モデル
-    # model = L.Classifier(alexnet.Alex(18))
-    model = L.Classifier(MLP())
+    model = alexnet.Alex(18)
+    insize = model.insize
+    model = L.Classifier(model)
+    # model = L.Classifier(MLP())
     if args.initmodel:
         # 学習済みのモデルを使う場合，読み込み
         print('Load model from', args.initmodel)
@@ -53,9 +57,11 @@ def main():
     optimizer.setup(model)
 
     # データとラベルの紐付け
-    # train = PreprocessedDataset(args.train, args.root, model.insize)
-    # val = PreprocessedDataset(args.val, args.root, model.insize)
-    train, val = chainer.datasets.get_mnist()
+    mean = np.load(args.mean)
+    print(mean)
+    train = PreprocessedDataset(args.train, args.root, mean, insize)
+    val = PreprocessedDataset(args.val, args.root, mean, insize)
+    # train, val = chainer.datasets.get_mnist()
 
     # 学習データとテストデータの定義
     train_iter = iterators.SerialIterator(train, batch_size=args.batchsize)
@@ -76,7 +82,7 @@ def main():
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'validation/main/loss', 'main/accuracy',
          'validation/main/accuracy']))  # ログを出力
-    trainer.extend(extensions.ProgressBar(update_interval=500))  # プログレスバー
+    trainer.extend(extensions.ProgressBar(update_interval=1))  # プログレスバー
 
     # 学習の実行
     trainer.run()

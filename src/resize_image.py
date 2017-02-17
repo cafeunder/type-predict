@@ -43,6 +43,9 @@ if __name__ == "__main__":
         os.makedirs("../data")
     image_list = glob.glob("../img/*.png")
     for image in image_list:
-        print(image)
+        img_name = image.replace("../img/", "")
+        if not os.path.exists("../data/" + img_name.split("_")[0]):
+            os.makedirs("../data/" + img_name.split("_")[0])
+        print(img_name)
         result = resize_image(image, 256)
-        cv2.imwrite("../data/" + image.replace("../img/", ""), result)
+        cv2.imwrite("../data/" + img_name.split("_")[0] + "/" + img_name, result)
