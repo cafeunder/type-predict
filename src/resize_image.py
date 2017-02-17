@@ -38,5 +38,3 @@ def resize_image(filename, size):
 if __name__ == "__main__":
     result = resize_image("../img/absol_588.png", 256)
     cv2.imwrite("../result.png", result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
