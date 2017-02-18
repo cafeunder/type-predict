@@ -2,17 +2,16 @@
 """
 学習したモデルをテストするプログラム
 """
+import argparse
+
 import numpy as np
 import chainer
 import chainer.links as L
 from PIL import Image
-
-from dataset.preprocessed_dataset import PreprocessedDataset
 from models import alexnet
-from resize_image import resize_image
 
 
-def preprocess_image(path, mean):
+def preprocess_image(path, mean, insize):
     f = Image.open(path)
     try:
         image = np.asarray(f, dtype=np.float32)
@@ -31,21 +30,44 @@ def preprocess_image(path, mean):
     bottom = top + crop_size
     right = left + crop_size
 
-    image = image[:, top:bottom, left:right]
+    image = image[0:3, top:bottom, left:right]
     image -= mean[:, top:bottom, left:right]
     image *= (1.0 / 255.0)
     return image
 
 
-model = alexnet.Alex(18)
-insize = model.insize
-model = L.Classifier(model)
-chainer.serializers.load_npz("../model_final", model)
+def main():
+    parser = argparse.ArgumentParser(description='Test Learned Model')
+    parser.add_argument('--model', default='../model_final',
+                        help='Path to learned model')
+    parser.add_argument('--mean', '-o', default='../mean_train.npy',
+                        help='path to mean array')
+    parser.add_argument('--label', default='../labels.txt',
+                        help='Path to label file')
+    parser.add_argument('--img', default='../resize_img/Articuno.png',
+                        help='Path to image file')
+    args = parser.parse_args()
 
-mean = np.load("../mean_train.npy")
-y = model.predictor(
-    np.array([preprocess_image("../test/dorami_256.png", mean)]))
-y = y.data
-y = np.exp(y) / np.sum(np.exp(y))
-print(y)
-print(np.argmax(y))
+    # 学習済みモデルの読み込み
+    model = alexnet.Alex(18)
+    insize = model.insize
+    model = L.Classifier(model)
+    chainer.serializers.load_npz(args.model, model)
+
+    # 平均画像の読み込み
+    mean = np.load(args.mean)
+
+    # 画像からタイプを予測
+    y = model.predictor(
+        np.array([preprocess_image(args.img, mean, insize)]))
+    y = y.data
+    y = np.exp(y) / np.sum(np.exp(y))  # ソフトマックス関数で各タイプの確率を計算
+
+    # 推定されたタイプを出力
+    type_file = open(args.label, 'r')
+    type_list = type_file.read().split("\n")
+    print("Type of this image is : " + type_list[np.argmax(y)])
+
+
+if __name__ == '__main__':
+    main()

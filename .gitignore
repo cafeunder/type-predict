@@ -15,4 +15,5 @@ test.txt
 train.txt
 labels.txt
 model_final
-test
+test_img/*.png
+resize_img/*.png

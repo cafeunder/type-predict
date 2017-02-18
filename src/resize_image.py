@@ -1,4 +1,5 @@
 # coding:utf-8
+import argparse
 import glob
 import os
 import cv2
@@ -14,7 +15,7 @@ def resize_image(filename, size):
     name = base.split("_")[0]
 
     # 元画像の読み込みとサイズの取得
-    img = cv2.imread("../img/" + filename)
+    img = cv2.imread(filename)
     src_width = len(img[0])
     src_height = len(img)
     src = np.array(img)
@@ -38,17 +39,52 @@ def resize_image(filename, size):
     return dst
 
 
+def main():
+    parser = argparse.ArgumentParser(
+        description='Resize Image to size (256, 256)')
+    parser.add_argument('--imgdir', default='../test_img',
+                        help='Path to directory of image')
+    parser.add_argument('--resizedir', default='../resize_img',
+                        help='Path to resized image file')
+    parser.add_argument('--fortrain', type=bool, default=False)
+    args = parser.parse_args()
+
+    # リサイズした画像を保存するフォルダが存在しない場合，作成
+    if not os.path.exists(args.resizedir):
+        os.makedirs(args.resizedir)
+    if args.fortrain:  # 訓練データ用の画像を作成する場合
+        # リサイズ前の画像のリストを取得
+        image_list = glob.glob(args.imgdir + "/*.png")
+        image_list = image_list + glob.glob(args.imgdir + "/*.jpg")
+        image_list = image_list + glob.glob(args.imgdir + "/*.jpeg")
+        # リサイズ前の画像をリサイズして保存
+        for image in image_list:
+            img_name = os.path.basename(image)  # 画像名
+            # ポケモンごとに画像フォルダを作成
+            if not os.path.exists(args.resizedir + "/" + img_name.split("_")[
+                0]):
+                os.makedirs(args.resizedir + "/" + img_name.split("_")[0])
+            print(img_name)
+            # 画像をリサイズ
+            result = resize_image(image, 256)
+            # リサイズ後の画像を保存
+            cv2.imwrite(
+                args.resizedir + "/" + img_name.split("_")[
+                    0] + "/" + os.path.splitext(img_name)[0] + ".png", result)
+    else:  # 学習後のテスト用の画像を作成する場合
+        # リサイズ前の画像のリストを取得
+        image_list = glob.glob(args.imgdir + "/*.png")
+        image_list = image_list + glob.glob(args.imgdir + "/*.jpg")
+        image_list = image_list + glob.glob(args.imgdir + "/*.jpeg")
+        # リサイズ前の画像をリサイズして保存
+        for image in image_list:
+            img_name = os.path.basename(image)  # 画像名
+            print(image)
+            result = resize_image(image, 256)
+            cv2.imwrite(
+                args.resizedir + "/" + os.path.splitext(img_name)[0] + ".png",
+                result)
+
+
 if __name__ == "__main__":
-    # name = "../test/dorami"
-    # result = resize_image(name + ".jpg", 256)
-    # cv2.imwrite(name + "_256.png", result)
-    if not os.path.exists("../data"):
-         os.makedirs("../data")
-    image_list = glob.glob("../img/*.png")
-    for image in image_list:
-        img_name = os.path.basename(image)
-        if not os.path.exists("../data/" + img_name.split("_")[0]):
-            os.makedirs("../data/" + img_name.split("_")[0])
-        print(img_name)
-        result = resize_image(image, 256)
-        cv2.imwrite("../data/" + img_name.split("_")[0] + "/" + img_name, result)
+    main()
