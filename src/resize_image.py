@@ -39,7 +39,7 @@ def resize_image(filename, size):
 
 
 if __name__ == "__main__":
-    name = "../test/dorami"
+    name = "../test/pikkoro"
     result = resize_image(name + ".jpg", 256)
     cv2.imwrite(name + "_256.png", result)
     # if not os.path.exists("../data"):

@@ -44,7 +44,7 @@ chainer.serializers.load_npz("../model_final", model)
 
 mean = np.load("../mean_train.npy")
 y = model.predictor(
-    np.array([preprocess_image("../test/dorami_256.png", mean)]))
+    np.array([preprocess_image("../test/pikkoro_256.png", mean)]))
 y = y.data
 y = np.exp(y) / np.sum(np.exp(y))
 print(y)
