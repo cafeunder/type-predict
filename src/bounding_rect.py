@@ -21,14 +21,15 @@ def calcRect(img):
 
     return left, top, (right - left), (bottom - top)
 
-files = os.listdir("../png")
+files = os.listdir("../test")
 # すべての画像を読み込み、最小の矩形領域を抽出
 for filename in files:
     base, ext = os.path.splitext(filename)
-    if not ext == ".png": continue
+    if not (ext == ".png" or ext == ".jpg" or ext == ".jpeg"): continue
 
-    img = cv2.imread("../png/" + filename)
+    img = cv2.imread("../test/" + filename)
     print(filename)
     x, y, width, height = calcRect(img)
     dst = img[y:y + height, x:x + width]
-    cv2.imwrite("../img/" + filename, dst)
+    os.remove("../test/" + filename)
+    cv2.imwrite("../test/" + os.path.splitext(filename)[0] + ".png", dst)
