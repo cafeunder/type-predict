@@ -2,6 +2,7 @@
 """
 学習をさせるプログラム
 """
+import os
 import argparse
 import numpy as np
 import chainer
@@ -9,9 +10,9 @@ import chainer.links as L
 from chainer import optimizers, iterators, training
 from chainer.datasets import tuple_dataset
 from chainer.training import extensions
-from src.dataset.preprocessed_dataset import PreprocessedDataset
-from src.models import alexnet
-from src.models.mlp import MLP
+from dataset.preprocessed_dataset import PreprocessedDataset
+from models import alexnet
+from models.mlp import MLP
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
                         help='Number of sweeps over the dataset to train')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--initmodel',
+    parser.add_argument('--initmodel', default='',
                         help='Initialize the model from given file')
     parser.add_argument('--mean', '-m', default='../mean_train.npy',
                         help='Mean file (computed by compute_mean.py)')
@@ -100,6 +101,9 @@ def main():
 
     # 学習の実行
     trainer.run()
+
+    # 学習後のモデルの保存
+    chainer.serializers.save_npz(os.path.join(args.out, 'model_final'), model)
 
 
 if __name__ == '__main__':
