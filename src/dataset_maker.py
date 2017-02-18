@@ -52,16 +52,17 @@ for poke_name in poke_names:
     # 訓練データとテストデータを作成
     for image in image_list:
         # 各ポケモンの画像の3/4は訓練データに，1/4はテストデータにする
+        cnts[type_to_int[poke_to_type[poke_name]]] += 1
         if random.uniform(0.0, 1.0) < 0.75:
             train.write(
                 image + " " + str(type_to_int[poke_to_type[poke_name]]) + "\n")
         else:
-            cnts[type_to_int[poke_to_type[poke_name]]] += 1
             test.write(
                 image + " " + str(type_to_int[poke_to_type[poke_name]]) + "\n")
         cnt += 1
 
-print(cnts)
+for i in range(len(type_list)):
+    print(type_list[i], cnts[i])
 type_file.close()
 train.close()
 test.close()
