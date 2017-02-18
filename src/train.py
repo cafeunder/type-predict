@@ -26,16 +26,20 @@ def main():
                         help='Number of sweeps over the dataset to train')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--mean', '-m', default='../mean_train.npy',
-                        help='Mean file (computed by compute_mean.py)')
     parser.add_argument('--initmodel',
                         help='Initialize the model from given file')
+    parser.add_argument('--mean', '-m', default='../mean_train.npy',
+                        help='Mean file (computed by compute_mean.py)')
+    parser.add_argument('--resume', '-r', default='',
+                        help='Initialize the trainer from given file')
     parser.add_argument('--out', '-o', default='../result',
                         help='Directory to output the result')
     parser.add_argument('--root', '-R', default='.',
                         help='Root directory path of image files')
     parser.add_argument('--val_batchsize', '-b', type=int, default=250,
                         help='Validation minibatch size')
+    parser.add_argument('--test', action='store_true')
+    parser.set_defaults(test=False)
     args = parser.parse_args()
 
     # 学習モデル
@@ -52,15 +56,10 @@ def main():
         chainer.cuda.get_device(args.gpu).use()
         model.to_gpu()
 
-    # 最適化手法の設定
-    optimizer = optimizers.MomentumSGD(lr=0.01, momentum=0.9)
-    optimizer.setup(model)
-
     # データとラベルの紐付け
     mean = np.load(args.mean)
-    print(mean)
     train = PreprocessedDataset(args.train, args.root, mean, insize)
-    val = PreprocessedDataset(args.val, args.root, mean, insize)
+    val = PreprocessedDataset(args.val, args.root, mean, insize, False)
     # train, val = chainer.datasets.get_mnist()
 
     # 学習データとテストデータの定義
@@ -68,9 +67,16 @@ def main():
     val_iter = iterators.SerialIterator(val, batch_size=args.val_batchsize,
                                         repeat=False, shuffle=False)
 
+    # 最適化手法の設定
+    optimizer = optimizers.MomentumSGD(lr=0.01, momentum=0.9)
+    optimizer.setup(model)
+
     # 学習の設定
     updater = training.StandardUpdater(train_iter, optimizer, device=args.gpu)
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
+
+    val_interval = (10 if args.test else 100000), 'iteration'
+    log_interval = (10 if args.test else 1000), 'iteration'
 
     # 学習後の評価の設定
     # エポック終了毎に評価される
@@ -78,11 +84,19 @@ def main():
 
     # ログの記録
     trainer.extend(extensions.dump_graph('main/loss'))  # 学習曲線のグラフを保存
-    trainer.extend(extensions.LogReport())  # ログを保存
+    trainer.extend(extensions.snapshot(), trigger=val_interval)  # 一定間隔でプログレスを保存
+    trainer.extend(extensions.snapshot_object(
+        model, 'model_iter_{.updater.iteration}'),
+        trigger=val_interval)  # 一定間隔でモデルを保存
+    trainer.extend(extensions.LogReport(trigger=log_interval))  # 一定間隔でログを保存
+    trainer.extend(extensions.observe_lr(), trigger=log_interval)  # 一定間隔で学習率を保存
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'validation/main/loss', 'main/accuracy',
-         'validation/main/accuracy']))  # ログを出力
-    trainer.extend(extensions.ProgressBar(update_interval=1))  # プログレスバー
+         'validation/main/accuracy', 'lr']), trigger=log_interval)  # ログを出力
+    trainer.extend(extensions.ProgressBar(update_interval=10))  # プログレスバー
+
+    if args.resume:
+        chainer.serializers.load_npz(args.resume, trainer)
 
     # 学習の実行
     trainer.run()
