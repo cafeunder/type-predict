@@ -39,16 +39,16 @@ def resize_image(filename, size):
 
 
 if __name__ == "__main__":
-    name = "../test/dorami"
-    result = resize_image(name + ".jpg", 256)
-    cv2.imwrite(name + "_256.png", result)
-    # if not os.path.exists("../data"):
-    #     os.makedirs("../data")
-    # image_list = glob.glob("../img/*.png")
-    # for image in image_list:
-    #     img_name = image.replace("../img/", "")
-    #     if not os.path.exists("../data/" + img_name.split("_")[0]):
-    #         os.makedirs("../data/" + img_name.split("_")[0])
-    #     print(img_name)
-    #     result = resize_image(image, 256)
-    #     cv2.imwrite("../data/" + img_name.split("_")[0] + "/" + img_name, result)
+    # name = "../test/dorami"
+    # result = resize_image(name + ".jpg", 256)
+    # cv2.imwrite(name + "_256.png", result)
+    if not os.path.exists("../data"):
+         os.makedirs("../data")
+    image_list = glob.glob("../img/*.png")
+    for image in image_list:
+        img_name = os.path.basename(image)
+        if not os.path.exists("../data/" + img_name.split("_")[0]):
+            os.makedirs("../data/" + img_name.split("_")[0])
+        print(img_name)
+        result = resize_image(image, 256)
+        cv2.imwrite("../data/" + img_name.split("_")[0] + "/" + img_name, result)
