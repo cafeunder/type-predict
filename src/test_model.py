@@ -49,7 +49,7 @@ def main():
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
-    model = alexnet.Alex(18)
+    model = alexnet.Alex(18, False)
     insize = model.insize
     model = L.Classifier(model)
     chainer.serializers.load_npz(args.model, model)
@@ -66,6 +66,11 @@ def main():
     # 推定されたタイプを出力
     type_file = open(args.label, 'r')
     type_list = type_file.read().split("\n")
+
+    for i in range(len(type_list)):
+        if type_list[i] == "":
+            break
+        print(type_list[i], ":", str(int(y[0][i] * 100)), "%")
     print("Type of this image is : " + type_list[np.argmax(y)])
 
 
