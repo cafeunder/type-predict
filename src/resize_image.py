@@ -80,7 +80,7 @@ def main():
         for image in image_list:
             img_name = os.path.basename(image)  # 画像名
             print(image)
-            result = resize_image(image, 256)
+            result = resize_image(image, 227)
             cv2.imwrite(
                 args.resizedir + "/" + os.path.splitext(img_name)[0] + ".png",
                 result)
