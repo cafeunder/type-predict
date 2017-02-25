@@ -1,13 +1,8 @@
-/img/*.png
-/png/*.png
 debug.log
 /.vscode/
 /not_exist.csv
-/gif/
 /src/gif_to_png.py
-/result.png
 .idea
-data
 /result/*
 __pycache__
 *.npy
@@ -15,7 +10,4 @@ test.txt
 train.txt
 labels.txt
 model_final
-/test_img/*.png
-/resize_img/*.png
 /output
-/clip_img/
