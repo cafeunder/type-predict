@@ -17,3 +17,5 @@ labels.txt
 model_final
 /test_img/*.png
 /resize_img/*.png
+/output
+/clip_img/
