@@ -11,3 +11,6 @@ train.txt
 labels.txt
 model_final
 /output
+/train_data
+/test_image
+/premade_model/model_final
