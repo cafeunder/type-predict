@@ -3,7 +3,7 @@ debug.log
 /not_exist.csv
 /src/gif_to_png.py
 .idea
-/result/*
+/result
 __pycache__
 *.npy
 test.txt
