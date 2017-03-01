@@ -34,7 +34,7 @@ def scale_augmentation(filename):
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
 
     # 短辺方向の比率を計算
-    rate = size / src_height if (src_height < src_width) else size / src_width
+    rate = size / float(src_height) if (src_height < src_width) else size / float(src_width)
 
     # 元画像を拡大
     expand = cv2.resize(img, (int(src_width * rate), int(src_height * rate)))
@@ -69,7 +69,7 @@ def compute_PCA(image_list):
     return eigenvalues, eigenvector
 
 
-def color_augmentation(image, eigenvalues, eigenvector, mu=0, sigma=0.1):
+def color_augmentation(image, eigenvalues, eigenvector, mu=0, sigma=1.0):
     """
     Color Augmentationを行う
     """
@@ -114,6 +114,8 @@ if __name__ == '__main__':
 
     # 主成分分析を行い固有値、固有ベクトルを計算
     eigenvalues, eigenvector = compute_PCA(augmentation_list)
+    print(eigenvalues)
+    print(eigenvector)
 
     # Color Augmentationを行い、画像に出力する
     for i in range(len(img_name_list)):

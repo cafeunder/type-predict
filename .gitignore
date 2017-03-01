@@ -14,3 +14,5 @@ model_final
 /train_data
 /test_image
 /premade_model/model_final
+/img
+*.pyc

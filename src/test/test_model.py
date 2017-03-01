@@ -8,7 +8,7 @@ import numpy as np
 import chainer
 import chainer.links as L
 from PIL import Image
-from models import alexnet
+from src.models import alexnet
 
 
 def preprocess_image(path, mean, insize):
@@ -38,14 +38,13 @@ def preprocess_image(path, mean, insize):
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
-    parser.add_argument('--model', default='../model_final',
+    parser.add_argument('--model', default='../../model_final',
                         help='Path to learned model')
-    parser.add_argument('--mean', '-o', default='../mean_train.npy',
+    parser.add_argument('--mean', '-o', default='../../mean.npy',
                         help='path to mean array')
-    parser.add_argument('--label', default='../labels.txt',
+    parser.add_argument('--label', default='../../labels.txt',
                         help='Path to label file')
-    parser.add_argument('--img', default='../resize_img/Articuno.png',
-                        help='Path to image file')
+    parser.add_argument('--img', help='Path to image file')
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
