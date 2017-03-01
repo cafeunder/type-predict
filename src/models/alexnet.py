@@ -14,7 +14,7 @@ class Alex(Chain):
     任意の分類クラスに対応．
     """
 
-    insize = 227
+    insize = 223
 
     def __init__(self, out_size, train=True):
         super(Alex, self).__init__(
