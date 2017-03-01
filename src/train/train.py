@@ -18,6 +18,8 @@ os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'
 
 def main():
     parser = argparse.ArgumentParser(description='Type Prediction: Pokemon')
+    parser.add_argument('--learn_type', type=int, default=1,
+                        help='Type number to learn')
     parser.add_argument('--train', default='../../train.txt',
                         help='Path to training image-label list file')
     parser.add_argument('--val', default='../../test.txt',
@@ -45,7 +47,10 @@ def main():
     args = parser.parse_args()
 
     # 学習モデル
-    model = alexnet.Alex(18)
+    if args.learn_type == 1:
+        model = alexnet.Alex(18)
+    else:
+        model = alexnet.Alex(19)
     model = L.Classifier(model)
     if args.initmodel:
         # 学習済みのモデルを使う場合，読み込み

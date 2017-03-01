@@ -10,6 +10,8 @@ import random
 
 def main():
     parser = argparse.ArgumentParser(description='Make Dataset')
+    parser.add_argument('--learn_type', type=int, default=1,
+                        help='Type number to learn')
     parser.add_argument('--train', default='../../train.txt',
                         help='Path to training image-label list file')
     parser.add_argument('--val', default='../../test.txt',
@@ -48,13 +50,17 @@ def main():
     poke_to_type = {}  # ポケモン→タイプの辞書
     poke_dict = poke_dict_file.read().split(
         "\n")  # ポケモンとそのタイプのリスト（ポケモン，第一タイプ，第二タイプ）
-    cnt = 0
     for poke in poke_dict:
         # ポケモンを辞書に登録
         if len(poke.split(",")) < 3:
             break
-        poke_to_type[poke.split(",")[0]] = poke.split(",")[1]
-
+        if args.learn_type == 1:
+            poke_to_type[poke.split(",")[0]] = poke.split(",")[1]
+        else:
+            if poke.split(",")[2]:
+                poke_to_type[poke.split(",")[0]] = poke.split(",")[2]
+            else:
+                poke_to_type[poke.split(",")[0]] = "none"
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成
     cnts = [0 for i in range(len(type_list))]
     for poke_name in poke_names:

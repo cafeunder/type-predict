@@ -38,6 +38,8 @@ def preprocess_image(path, mean, insize):
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
+    parser.add_argument('--learn_type', type=int, default=1,
+                        help='Type number to learn')
     parser.add_argument('--model', default='../../model_final',
                         help='Path to learned model')
     parser.add_argument('--mean', '-o', default='../../mean.npy',
@@ -48,8 +50,10 @@ def main():
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
-    model = alexnet.Alex(18, False)
-    insize = model.insize
+    if args.learn_type == 1:
+        model = alexnet.Alex(18, False)
+    else:
+        model = alexnet.Alex(19, False)
     model = L.Classifier(model)
     chainer.serializers.load_npz(args.model, model)
 
@@ -58,7 +62,7 @@ def main():
 
     # 画像からタイプを予測
     y = model.predictor(
-        np.array([preprocess_image(args.img, mean, insize)]))
+        np.array([preprocess_image(args.img, mean, 224)]))
     y = y.data
     y = np.exp(y) / np.sum(np.exp(y))  # ソフトマックス関数で各タイプの確率を計算
 
