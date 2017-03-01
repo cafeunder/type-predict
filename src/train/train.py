@@ -106,7 +106,9 @@ def main():
     trainer.run()
 
     # 学習後のモデルの保存
-    chainer.serializers.save_npz(os.path.join(args.out, 'model_final'), model)
+    chainer.serializers.save_npz(
+        os.path.join(args.out, 'model_final_type' + str(args.learn_type)),
+        model)
 
 
 if __name__ == '__main__':

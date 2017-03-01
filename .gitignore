@@ -8,7 +8,6 @@ __pycache__
 *.npy
 test.txt
 train.txt
-labels.txt
 model_final
 /output
 /train_data
