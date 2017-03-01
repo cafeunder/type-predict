@@ -16,7 +16,7 @@ def scale_augmentation(filename):
     ついでにHorizontal Flipもする
     """
     CROP_SIZE = 224
-    RESIZE_MIN, RESIZE_MAX = 256, 480
+    RESIZE_MIN, RESIZE_MAX = 224, 360
 
     # 拡張子を除いた画像名を取得
     base, ext = os.path.splitext(filename)
