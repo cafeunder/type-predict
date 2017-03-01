@@ -4,7 +4,8 @@ githubのファイル制限に引っかからないよう、モデルデータ�
 '''
 import glob
 
-size = 1024 * 1024 * 99 # 99MB
+size = 1024 * 1024 * 99  # 99MB
+
 
 # モデルデータを読み込み、サブファイルに分割する
 def split_model(filename):
@@ -23,10 +24,11 @@ def split_model(filename):
 
 
 # サブファイルをマージして、モデルデータを復元する
-def merge_model(basename):
-    chunk_list = glob.glob("../../premade_model/" + basename + "*")
-    dst = open("../../model_final", "wb")
+def merge_model(basename, modelname):
+    chunk_list = glob.glob(basename + "/*")
+    dst = open(modelname, "wb")
     for chunk in chunk_list:
+        print(chunk)
         file = open(chunk, "rb")
         bin = file.read()
         dst.write(bin)
@@ -37,8 +39,8 @@ if __name__ == "__main__":
     # Trueなら分割したモデルデータを復元
     # Falseならモデルデータを分割する
     # 利用時は書き換える必要ない
-    merge = False
+    merge = True
     if merge:
-        merge_model("../../premade_model")
+        merge_model("../../premade_model/type2", "../../model_final_type2")
     else:
         split_model("../../model_final")

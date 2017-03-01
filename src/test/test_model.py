@@ -31,7 +31,7 @@ def preprocess_image(path, mean, insize):
     right = left + crop_size
 
     image = image[0:3, top:bottom, left:right]
-    image -= mean[:, top:bottom, left:right]
+    image -= mean
     image *= (1.0 / 255.0)
     return image
 
@@ -55,7 +55,8 @@ def main():
     else:
         model = alexnet.Alex(19, False)
     model = L.Classifier(model)
-    chainer.serializers.load_npz(args.model, model)
+    chainer.serializers.load_npz(args.model + "_type" + str(args.learn_type),
+                                 model)
 
     # 平均画像の読み込み
     mean = np.load(args.mean)

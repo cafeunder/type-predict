@@ -8,7 +8,7 @@ __pycache__
 *.npy
 test.txt
 train.txt
-model_final
+model_final*
 /output
 /train_data
 /test_image
