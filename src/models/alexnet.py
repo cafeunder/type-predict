@@ -14,8 +14,6 @@ class Alex(Chain):
     任意の分類クラスに対応．
     """
 
-    insize = 223
-
     def __init__(self, out_size, train=True):
         super(Alex, self).__init__(
             # 第一層：入力のチャンネル数=3，出力のチャンネル数=96，フィルターのサイズ=(11,11)，ストライド=4

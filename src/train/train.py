@@ -15,6 +15,7 @@ from src.train.dataset.preprocessed_dataset import PreprocessedDataset
 
 os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'
 
+
 def main():
     parser = argparse.ArgumentParser(description='Type Prediction: Pokemon')
     parser.add_argument('--train', default='../../train.txt',
@@ -25,7 +26,7 @@ def main():
                         help='Number of images in each mini-batch')
     parser.add_argument('--epoch', '-e', type=int, default=10,
                         help='Number of sweeps over the dataset to train')
-    parser.add_argument('--gpu', '-g', type=int, default=0,
+    parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--initmodel', default='',
                         help='Initialize the model from given file')
@@ -45,7 +46,6 @@ def main():
 
     # 学習モデル
     model = alexnet.Alex(18)
-    insize = model.insize
     model = L.Classifier(model)
     if args.initmodel:
         # 学習済みのモデルを使う場合，読み込み
@@ -58,8 +58,8 @@ def main():
 
     # データとラベルの紐付け
     mean = np.load(args.mean)
-    train = PreprocessedDataset(args.train, args.root, mean, insize)
-    val = PreprocessedDataset(args.val, args.root, mean, insize, False)
+    train = PreprocessedDataset(args.train, args.root, mean)
+    val = PreprocessedDataset(args.val, args.root, mean)
 
     # 学習データとテストデータの定義
     train_iter = iterators.SerialIterator(train, batch_size=args.batchsize)

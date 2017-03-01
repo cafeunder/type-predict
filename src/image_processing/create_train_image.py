@@ -1,6 +1,6 @@
 # coding:utf-8
 """
-学習に用いるデータセットを作成するクラス
+学習に用いる画像を前処理してデータセットを生成するクラス
 """
 import os
 import cv2
@@ -34,7 +34,8 @@ def scale_augmentation(filename):
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
 
     # 短辺方向の比率を計算
-    rate = size / float(src_height) if (src_height < src_width) else size / float(src_width)
+    rate = size / float(src_height) if (
+    src_height < src_width) else size / float(src_width)
 
     # 元画像を拡大
     expand = cv2.resize(img, (int(src_width * rate), int(src_height * rate)))
@@ -47,7 +48,8 @@ def scale_augmentation(filename):
 
     # ランダムな位置を取り出す
     x = random.randint(0, exp_width - CROP_SIZE) if exp_width > CROP_SIZE else 0
-    y = random.randint(0, exp_height - CROP_SIZE) if exp_height > CROP_SIZE else 0
+    y = random.randint(0,
+                       exp_height - CROP_SIZE) if exp_height > CROP_SIZE else 0
 
     # 矩形領域に貼り付け
     dst = expand[y:y + CROP_SIZE, x:x + CROP_SIZE]
@@ -59,7 +61,8 @@ def compute_PCA(image_list):
     画像リストから主成分分析を行う
     """
     # すべての画像を結合し 3チャンネルの配列とする
-    reshaped_array = image_list.reshape(image_list.shape[0] * image_list.shape[1] * image_list.shape[2], 3)
+    reshaped_array = image_list.reshape(
+        image_list.shape[0] * image_list.shape[1] * image_list.shape[2], 3)
 
     # 共分散行列から固有値と固有ベクトルを計算する
     cov = np.dot(reshaped_array.T, reshaped_array) / reshaped_array.shape[0]
@@ -83,9 +86,10 @@ def color_augmentation(image, eigenvalues, eigenvector, mu=0, sigma=1.0):
     # ノイズを足す
     return np.array(image + noise, dtype=int)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-                        description='Create train image')
+        description='Create train image')
     parser.add_argument('--srcdir', help='Path to directory of original image')
     parser.add_argument('--dstdir', default='../../train_data',
                         help='Path to train image file')
@@ -102,7 +106,7 @@ if __name__ == '__main__':
 
     # Scale Augmentationを行い、結果をリストにまとめる
     for image in original_image_list:
-        img_name = os.path.basename(image) # 画像名
+        img_name = os.path.basename(image)  # 画像名
         # ポケモンごとに画像フォルダを作成
         if not os.path.exists(args.dstdir + "/" + img_name.split("_")[0]):
             os.makedirs(args.dstdir + "/" + img_name.split("_")[0])
