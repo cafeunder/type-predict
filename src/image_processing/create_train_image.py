@@ -9,8 +9,36 @@ import random
 import argparse
 import glob
 
+def add_background(filename):
+    # 拡張子を除いた画像名を取得
+    base, ext = os.path.splitext(filename)
 
-def scale_augmentation(filename):
+    # 名前-フォルムの部分を抽出
+    name = base.split('_')[0]
+
+    # 画像読み込み
+    src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+
+    # マスクの取り出し
+    mask = cv2.cvtColor(src[:,:,3], cv2.COLOR_GRAY2RGB)
+    mask = mask / 255.0
+
+    # 次元を背景に合わせるため、アルファチャンネルなしの画像に変換
+    src = cv2.cvtColor(src, cv2.COLOR_RGBA2RGB)
+
+    # 背景を作成
+    background = np.zeros(src.shape, dtype=np.float64)
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    cv2.rectangle(background, (0, 0), (src.shape[1], src.shape[0]), color, cv2.FILLED)
+
+    # 画像を背景にのせる
+    background *= 1 - mask
+    background += src * mask
+
+    return background
+
+
+def scale_augmentation(image):
     """
     Scale Augmentationを行う
     ついでにHorizontal Flipもする
@@ -18,17 +46,10 @@ def scale_augmentation(filename):
     CROP_SIZE = 224
     RESIZE_MIN, RESIZE_MAX = 224, 360
 
-    # 拡張子を除いた画像名を取得
-    base, ext = os.path.splitext(filename)
-
-    # 名前-フォルムの部分を抽出
-    name = base.split('_')[0]
-
     # 元画像の読み込みとサイズの取得
-    img = cv2.imread(filename)
-    src_width = len(img[0])
-    src_height = len(img)
-    src = np.array(img)
+    src_width = len(image[0])
+    src_height = len(image)
+    src = np.array(image)
 
     # [RESIZE_MIN, RESIZE_MAX]の範囲でランダムにリサイズする
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
@@ -38,7 +59,7 @@ def scale_augmentation(filename):
     src_height < src_width) else size / float(src_width)
 
     # 元画像を拡大
-    expand = cv2.resize(img, (int(src_width * rate), int(src_height * rate)))
+    expand = cv2.resize(image, (int(src_width * rate), int(src_height * rate)))
     exp_width = len(expand[0])
     exp_height = len(expand)
 
@@ -56,13 +77,6 @@ def scale_augmentation(filename):
     return dst
 
 
-def trans_background(image, background):
-    reshape_image = image.reshape(image.shape[0] * image.shape[1], image.shape[2])
-    trans = np.random.randint(0, 255, 3)
-    trans_image = np.array([trans if all(reshape_image[i] == background) else reshape_image[i] for i in range(reshape_image.shape[0])])
-    return trans_image.reshape(image.shape)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Create train image')
@@ -76,21 +90,20 @@ if __name__ == '__main__':
         os.makedirs(args.dstdir)
 
     # 元画像のリストを取得
-    original_image_list = glob.glob(args.srcdir + "/*.png")
+    original_filename_list = glob.glob(args.srcdir + "/*.png")
     augmentation_list = []
     img_name_list = []
 
-    background = np.array([255, 255, 255])
     # Scale Augmentationを行い、結果をリストにまとめる
-    for image in original_image_list:
-        img_name = os.path.basename(image) # 画像名
+    for filename in original_filename_list:
+        img_name = os.path.basename(filename) # 画像名
         # ポケモンごとに画像フォルダを作成
         if not os.path.exists(args.dstdir + "/" + img_name.split("_")[0]):
             os.makedirs(args.dstdir + "/" + img_name.split("_")[0])
         print(img_name)
 
-        trans_image = trans_background(scale_augmentation(image), background)
+        image = scale_augmentation(add_background(filename))
 
         # ファイルに書き出し
         cv2.imwrite(args.dstdir + "/" + img_name.split("_")[0]
-                    + "/" + os.path.splitext(img_name)[0] + ".png", trans_image)
+                    + "/" + os.path.splitext(img_name)[0] + ".png", image)

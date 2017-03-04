@@ -7,30 +7,29 @@ import argparse
 import numpy as np
 import chainer
 import chainer.links as L
+import cv2
 from PIL import Image
 from src.models import alexnet
 
 
 def preprocess_image(path, mean, insize):
-    f = Image.open(path)
-    try:
-        image = np.asarray(f, dtype=np.float32)
-    finally:
-        if hasattr(f, 'close'):
-            f.close()
-
+    img = cv2.imread(path)
+    img = cv2.resize(img, (insize, insize))
+    image = np.asarray(img, dtype=np.float32)
     if image.ndim == 2:
+        # 画像の次元数が2の場合，1次元分足す
         image = image[:, :, np.newaxis]
     image = image.transpose(2, 0, 1)
-    crop_size = insize
-
-    _, h, w = image.shape
-    top = (h - crop_size) // 2
-    left = (w - crop_size) // 2
-    bottom = top + crop_size
-    right = left + crop_size
-
-    image = image[0:3, top:bottom, left:right]
+    # crop_size = insize
+    #
+    # _, h, w = image.shape
+    # top = (h - crop_size) // 2
+    # left = (w - crop_size) // 2
+    # bottom = top + crop_size
+    # right = left + crop_size
+    # #
+    # image = image[0:3, top:bottom, left:right]
+    image = image[0:3, :, :]
     image -= mean
     image *= (1.0 / 255.0)
     return image
