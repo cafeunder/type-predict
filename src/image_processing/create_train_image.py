@@ -29,7 +29,7 @@ def add_background(filename):
     # 背景を作成
     background = np.zeros(src.shape, dtype=np.float64)
     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    cv2.rectangle(background, (0, 0), (src.shape[1], src.shape[0]), color, cv2.FILLED)
+    cv2.rectangle(background, (0, 0), (src.shape[1], src.shape[0]), color, -1)
 
     # 画像を背景にのせる
     background *= 1 - mask
