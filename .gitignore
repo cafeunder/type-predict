@@ -15,3 +15,6 @@ model_final*
 /premade_model/model_final
 /img
 *.pyc
+/gif
+/png
+/preprocess
