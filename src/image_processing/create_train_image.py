@@ -9,8 +9,36 @@ import random
 import argparse
 import glob
 
+def add_background(filename):
+    # 拡張子を除いた画像名を取得
+    base, ext = os.path.splitext(filename)
 
-def scale_augmentation(filename):
+    # 名前-フォルムの部分を抽出
+    name = base.split('_')[0]
+
+    # 画像読み込み
+    src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+
+    # マスクの取り出し
+    mask = cv2.cvtColor(src[:,:,3], cv2.COLOR_GRAY2RGB)
+    mask = mask / 255.0
+
+    # 次元を背景に合わせるため、アルファチャンネルなしの画像に変換
+    src = cv2.cvtColor(src, cv2.COLOR_RGBA2RGB)
+
+    # 背景を作成
+    background = np.zeros(src.shape, dtype=np.float64)
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    cv2.rectangle(background, (0, 0), (src.shape[1], src.shape[0]), color, -1)
+
+    # 画像を背景にのせる
+    background *= 1 - mask
+    background += src * mask
+
+    return background
+
+
+def scale_augmentation(image):
     """
     Scale Augmentationを行う
     ついでにHorizontal Flipもする
@@ -18,17 +46,10 @@ def scale_augmentation(filename):
     CROP_SIZE = 224
     RESIZE_MIN, RESIZE_MAX = 224, 360
 
-    # 拡張子を除いた画像名を取得
-    base, ext = os.path.splitext(filename)
-
-    # 名前-フォルムの部分を抽出
-    name = base.split('_')[0]
-
     # 元画像の読み込みとサイズの取得
-    img = cv2.imread(filename)
-    src_width = len(img[0])
-    src_height = len(img)
-    src = np.array(img)
+    src_width = len(image[0])
+    src_height = len(image)
+    src = np.array(image)
 
     # [RESIZE_MIN, RESIZE_MAX]の範囲でランダムにリサイズする
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
@@ -38,7 +59,7 @@ def scale_augmentation(filename):
     src_height < src_width) else size / float(src_width)
 
     # 元画像を拡大
-    expand = cv2.resize(img, (int(src_width * rate), int(src_height * rate)))
+    expand = cv2.resize(image, (int(src_width * rate), int(src_height * rate)))
     exp_width = len(expand[0])
     exp_height = len(expand)
 
@@ -56,37 +77,6 @@ def scale_augmentation(filename):
     return dst
 
 
-def compute_PCA(image_list):
-    """
-    画像リストから主成分分析を行う
-    """
-    # すべての画像を結合し 3チャンネルの配列とする
-    reshaped_array = image_list.reshape(
-        image_list.shape[0] * image_list.shape[1] * image_list.shape[2], 3)
-
-    # 共分散行列から固有値と固有ベクトルを計算する
-    cov = np.dot(reshaped_array.T, reshaped_array) / reshaped_array.shape[0]
-    eigenvector, S, _ = np.linalg.svd(cov)
-    eigenvalues = np.sqrt(S)
-
-    return eigenvalues, eigenvector
-
-
-def color_augmentation(image, eigenvalues, eigenvector, mu=0, sigma=1.0):
-    """
-    Color Augmentationを行う
-    """
-    # 正規分布から乱数をサンプル
-    samples = np.random.normal(mu, sigma, 3)
-
-    # 固有値とサンプルを乗算、ノイズを計算
-    augmentation = samples * eigenvalues
-    noise = np.dot(eigenvector, augmentation.T)
-
-    # ノイズを足す
-    return np.array(image + noise, dtype=int)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Create train image')
@@ -100,36 +90,20 @@ if __name__ == '__main__':
         os.makedirs(args.dstdir)
 
     # 元画像のリストを取得
-    original_image_list = glob.glob(args.srcdir + "/*.png")
+    original_filename_list = glob.glob(args.srcdir + "/*.png")
     augmentation_list = []
     img_name_list = []
 
     # Scale Augmentationを行い、結果をリストにまとめる
-    for image in original_image_list:
-        img_name = os.path.basename(image)  # 画像名
+    for filename in original_filename_list:
+        img_name = os.path.basename(filename) # 画像名
         # ポケモンごとに画像フォルダを作成
         if not os.path.exists(args.dstdir + "/" + img_name.split("_")[0]):
             os.makedirs(args.dstdir + "/" + img_name.split("_")[0])
-        augmentation_list.append(scale_augmentation(image))
-        img_name_list.append(img_name)
+        print(img_name)
 
-    # augmentation_listをnumpy配列に変換
-    augmentation_list = np.array(augmentation_list)
-
-    # 主成分分析を行い固有値、固有ベクトルを計算
-    eigenvalues, eigenvector = compute_PCA(augmentation_list)
-    print(eigenvalues)
-    print(eigenvector)
-
-    # Color Augmentationを行い、画像に出力する
-    for i in range(len(img_name_list)):
-        # 画像と画像名
-        image = augmentation_list[i]
-        img_name = img_name_list[i]
-
-        # Color Augmentationを行う
-        dst = color_augmentation(image, eigenvalues, eigenvector)
+        image = scale_augmentation(add_background(filename))
 
         # ファイルに書き出し
         cv2.imwrite(args.dstdir + "/" + img_name.split("_")[0]
-                    + "/" + os.path.splitext(img_name)[0] + ".png", dst)
+                    + "/" + os.path.splitext(img_name)[0] + ".png", image)
