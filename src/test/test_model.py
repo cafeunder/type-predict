@@ -14,22 +14,22 @@ from src.models import alexnet
 
 def preprocess_image(path, mean, insize):
     img = cv2.imread(path)
-    img = cv2.resize(img, (insize, insize))
+    width, height = np.shape(img)[0], np.shape(img)[1]
+    rate = float(insize) / min(width, height)
+    img = cv2.resize(img, (int(width * rate), int(height * rate)))
+    print(np.shape(img))
     image = np.asarray(img, dtype=np.float32)
     if image.ndim == 2:
         # 画像の次元数が2の場合，1次元分足す
         image = image[:, :, np.newaxis]
     image = image.transpose(2, 0, 1)
-    # crop_size = insize
-    #
-    # _, h, w = image.shape
-    # top = (h - crop_size) // 2
-    # left = (w - crop_size) // 2
-    # bottom = top + crop_size
-    # right = left + crop_size
-    # #
-    # image = image[0:3, top:bottom, left:right]
-    image = image[0:3, :, :]
+
+    _, h, w = image.shape
+    top = (h - insize) // 2
+    left = (w - insize) // 2
+    bottom = top + insize
+    right = left + insize
+    image = image[0:3, top:bottom, left:right]
     image -= mean
     image *= (1.0 / 255.0)
     return image
@@ -50,9 +50,10 @@ def main():
 
     # 学習済みモデルの読み込み
     if args.learn_type == 1:
-        model = alexnet.Alex(18, False)
+        out_size = 18
     else:
-        model = alexnet.Alex(19, False)
+        out_size = 19
+    model = alexnet.Alex(out_size, False)
     model = L.Classifier(model)
     chainer.serializers.load_npz(args.model + "_type" + str(args.learn_type),
                                  model)
@@ -70,7 +71,7 @@ def main():
     type_file = open(args.label, 'r')
     type_list = type_file.read().split("\n")
 
-    for i in range(len(type_list)):
+    for i in range(out_size):
         if type_list[i] == "":
             break
         print(type_list[i], ":", str(int(y[0][i] * 100)), "%")
