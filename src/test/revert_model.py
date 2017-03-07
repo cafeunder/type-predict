@@ -41,6 +41,6 @@ if __name__ == "__main__":
     # 利用時は書き換える必要ない
     merge = True
     if merge:
-        merge_model("../../premade_model/type2", "../../model_final_type2")
+        merge_model("../../premade_model/type1", "../../model_final_type1")
     else:
         split_model("../../model_final")
