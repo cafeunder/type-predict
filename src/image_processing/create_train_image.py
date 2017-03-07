@@ -55,11 +55,10 @@ def scale_augmentation(image):
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
 
     # 短辺方向の比率を計算
-    rate = size / float(src_height) if (
-    src_height < src_width) else size / float(src_width)
+    rate = size / float(src_height) if (src_height < src_width) else size / float(src_width)
 
     # 元画像を拡大
-    expand = cv2.resize(image, (int(src_width * rate), int(src_height * rate)))
+    expand = cv2.resize(image, (int(src_width * rate + 0.5), int(src_height * rate + 0.5)))
     exp_width = len(expand[0])
     exp_height = len(expand)
 
