@@ -5,16 +5,12 @@ debug.log
 .idea
 /result
 __pycache__
-*.npy
 test.txt
 train.txt
 model_final*
-/output
 /train_data
 /test_image
-/premade_model/model_final
 /img
 *.pyc
 /gif
 /png
-/preprocess
