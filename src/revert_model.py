@@ -19,5 +19,5 @@ def merge_model(basename, modelname):
 
 
 if __name__ == "__main__":
-    merge_model("../../premade_model/type1", "../../model_final_type1")
-    merge_model("../../premade_model/type2", "../../model_final_type2")
+    merge_model("../premade_model/type1", "../model_final_type1")
+    merge_model("../premade_model/type2", "../model_final_type2")

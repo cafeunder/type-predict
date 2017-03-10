@@ -80,7 +80,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Create train image')
     parser.add_argument('--srcdir', help='Path to directory of original image')
-    parser.add_argument('--dstdir', default='../../train_data',
+    parser.add_argument('--dstdir', default='../train_data',
                         help='Path to train image file')
     args = parser.parse_args()
 

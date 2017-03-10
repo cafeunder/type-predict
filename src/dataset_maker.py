@@ -12,15 +12,15 @@ def main():
     parser = argparse.ArgumentParser(description='Make Dataset')
     parser.add_argument('--learn_type', type=int, default=1,
                         help='Type number to learn')
-    parser.add_argument('--train', default='../../train.txt',
+    parser.add_argument('--train', default='../train.txt',
                         help='Path to training image-label list file')
-    parser.add_argument('--val', default='../../test.txt',
+    parser.add_argument('--val', default='../test.txt',
                         help='Path to validation image-label list file')
-    parser.add_argument('--dictdir', default='../../dictionary.csv',
+    parser.add_argument('--dictdir', default='../dictionary.csv',
                         help='Path to dictionary file (Pokemon to Type)')
-    parser.add_argument('--label', default='../../labels.txt',
+    parser.add_argument('--label', default='../labels.txt',
                         help='Path to label file')
-    parser.add_argument('--imgdir', default='../../train_data/',
+    parser.add_argument('--imgdir', default='../train_data/',
                         help='Path to directory of image file')
     args = parser.parse_args()
 

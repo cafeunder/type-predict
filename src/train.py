@@ -20,9 +20,9 @@ def main():
     parser = argparse.ArgumentParser(description='Type Prediction: Pokemon')
     parser.add_argument('--learn_type', type=int, default=1,
                         help='Type number to learn')
-    parser.add_argument('--train', default='../../train.txt',
+    parser.add_argument('--train', default='../train.txt',
                         help='Path to training image-label list file')
-    parser.add_argument('--val', default='../../test.txt',
+    parser.add_argument('--val', default='../test.txt',
                         help='Path to validation image-label list file')
     parser.add_argument('--batchsize', '-B', type=int, default=32,
                         help='Number of images in each mini-batch')
@@ -32,11 +32,11 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--initmodel', default='',
                         help='Initialize the model from given file')
-    parser.add_argument('--mean', '-m', default='../../mean.npy',
+    parser.add_argument('--mean', '-m', default='../mean.npy',
                         help='Mean file (computed by compute_mean.py)')
     parser.add_argument('--resume', '-r', default='',
                         help='Initialize the trainer from given file')
-    parser.add_argument('--out', '-o', default='../../result',
+    parser.add_argument('--out', '-o', default='../result',
                         help='Directory to output the result')
     parser.add_argument('--root', '-R', default='.',
                         help='Root directory path of image files')

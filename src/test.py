@@ -54,11 +54,13 @@ def make_model(model_path, learn_type):
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
-    parser.add_argument('--model', default='../../model_final',
+    parser.add_argument('--model', default='../model_final',
                         help='Path to learned model')
-    parser.add_argument('--mean', '-o', default='../../mean.npy',
+    parser.add_argument('--mean1', default='../mean1.npy',
                         help='path to mean array')
-    parser.add_argument('--label', default='../../labels.txt',
+    parser.add_argument('--mean2', default='../mean2.npy',
+                        help='path to mean array')
+    parser.add_argument('--label', default='../labels.txt',
                         help='Path to label file')
     parser.add_argument('--img', help='Path to image file')
     args = parser.parse_args()
@@ -68,7 +70,8 @@ def main():
     model_type2, out_size_type2 = make_model(args.model, 2)
 
     # 平均画像の読み込み
-    mean = np.load(args.mean)
+    mean1 = np.load(args.mean1)
+    mean2 = np.load(args.mean2)
 
     # 推定されたタイプを出力
     type_file = open(args.label, 'r')
@@ -76,7 +79,7 @@ def main():
 
     # 画像からタイプを予測
     y_type1 = model_type1.predictor(
-        np.array([preprocess_image(args.img, mean, 224)]))
+        np.array([preprocess_image(args.img, mean1, 224)]))
     y_type1 = y_type1.data
     y_type1 = np.exp(y_type1) / np.sum(np.exp(y_type1))  # ソフトマックス関数で各タイプの確率を計算
 
@@ -88,7 +91,7 @@ def main():
 
     # 画像からタイプを予測
     y_type2 = model_type2.predictor(
-        np.array([preprocess_image(args.img, mean, 224)]))
+        np.array([preprocess_image(args.img, mean2, 224)]))
     y_type2 = y_type2.data
     y_type2 = np.exp(y_type2) / np.sum(np.exp(y_type2))  # ソフトマックス関数で各タイプの確率を計算
 

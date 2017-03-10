@@ -2,7 +2,9 @@
 '''
 githubのファイル制限に引っかからないよう、モデルデータを分割する
 '''
+import os
 import glob
+import argparse
 
 size = 1024 * 1024 * 99  # 99MB
 
@@ -31,4 +33,4 @@ if __name__ == '__main__':
     parser.add_argument('--output', help='Path to output directory')
     args = parser.parse_args()
 
-    divide_model(args.model, arg.output)
+    divide_model(args.model, args.output)
