@@ -51,16 +51,17 @@ def main():
     poke_dict = poke_dict_file.read().split(
         "\n")  # ポケモンとそのタイプのリスト（ポケモン，第一タイプ，第二タイプ）
     for poke in poke_dict:
+        record = poke.split(',')
         # ポケモンを辞書に登録
-        if len(poke.split(",")) < 3:
+        if len(record) < 3:
             break
         if args.learn_type == 1:
-            poke_to_type[poke.split(",")[0]] = poke.split(",")[1]
+            poke_to_type[record[0]] = record[1]
         else:
-            if poke.split(",")[2]:
-                poke_to_type[poke.split(",")[0]] = poke.split(",")[2]
+            if record[2][:-1]:
+                poke_to_type[record[0]] = record[2][:-1]
             else:
-                poke_to_type[poke.split(",")[0]] = "none"
+                poke_to_type[record[0]] = "none"
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成
     cnts = [0 for i in range(len(type_list))]
     for poke_name in poke_names:

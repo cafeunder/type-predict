@@ -65,7 +65,10 @@ def main():
     poke_to_type = {}  # ポケモン→タイプの辞書
     for poke in poke_dict_file:
         record = poke.split(',')
-        poke_to_type[record[0]] = (record[1], record[2][:-1])
+        if record[2][:-1]:
+            poke_to_type[record[0]] = (record[1], record[2][:-1])
+        else:
+            poke_to_type[record[0]] = (record[1], 'none')
 
     success_count_image = [0, 0]
     total_count_image = 0
@@ -93,10 +96,10 @@ def main():
             y_type2 = y_type2.data
             y_type2 = np.exp(y_type2) / np.sum(np.exp(y_type2))  # ソフトマックス関数で各タイプの確率を計算
             y_type2 = np.argmax(y_type2)
-            if (poke_to_type[poke_name][1] == '' and y_type2 == type_to_int['none']) or (poke_to_type[poke_name][1] != '' and y_type2 == type_to_int[poke_to_type[poke_name][1]]):
+            if y_type2 == type_to_int[poke_to_type[poke_name][1]]:
                 success_count_image[1] += 1
 
-            if y_type1 == type_to_int[poke_to_type[poke_name][0]] and (poke_to_type[poke_name][1] != '' and y_type2 == type_to_int[poke_to_type[poke_name][1]]):
+            if y_type1 == type_to_int[poke_to_type[poke_name][0]] and y_type2 == type_to_int[poke_to_type[poke_name][1]]:
                 success_count_poke[poke_name] += 1
             total_count_poke[poke_name] += 1
 
