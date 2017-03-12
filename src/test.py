@@ -100,7 +100,7 @@ def main():
             break
         print(type_list[i], ":", str(int(y_type2[0][i] * 100)), "%")
     print("Type2 of this image is : " + type_list[np.argmax(y_type2)])
-
+    print(type_list[np.argmax(y_type1)] + "," + type_list[np.argmax(y_type2)])
 
 if __name__ == '__main__':
     main()
