@@ -65,19 +65,17 @@ def main():
     poke_to_type = {}  # ポケモン→タイプの辞書
     for poke in poke_dict_file:
         record = poke.split(',')
-        if record[2][:-1]:
-            poke_to_type[record[0]] = (record[1], record[2][:-1])
+        record[2] = record[2].replace('\n', '')
+        if record[2]:
+            poke_to_type[record[0]] = (record[1], record[2])
         else:
             poke_to_type[record[0]] = (record[1], 'none')
 
     success_count_image = [0, 0]
     total_count_image = 0
-    success_count_poke = {}
-    total_count_poke = {}
     for poke_name in poke_names:
-        if poke_name not in success_count_poke:
-            success_count_poke[poke_name] = 0
-            total_count_poke[poke_name] = 0
+        success_count_poke = 0
+        total_count_poke = 0
 
         # 各ポケモンの画像を全て取得
         image_list = glob.glob(os.path.join(args.imgdir, poke_name) + "/*.png")
@@ -100,14 +98,12 @@ def main():
                 success_count_image[1] += 1
 
             if y_type1 == type_to_int[poke_to_type[poke_name][0]] and y_type2 == type_to_int[poke_to_type[poke_name][1]]:
-                success_count_poke[poke_name] += 1
-            total_count_poke[poke_name] += 1
-
+                success_count_poke += 1
+            total_count_poke += 1
             total_count_image += 1
+        print(poke_name + " accuracy : " + str(float(success_count_poke) / total_count_poke))
     print("type1 accuracy : " + str(success_count_image[0] / total_count_image))
     print("type2 accuracy : " + str(success_count_image[1] / total_count_image))
-    for poke_name in success_count_poke:
-        print(poke_name + " accuracy : " + str(success_count_poke[poke_name] / total_count_poke[poke_name]))
 
 if __name__ == '__main__':
     main()
