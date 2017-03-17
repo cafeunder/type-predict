@@ -58,8 +58,9 @@ def main():
         if args.learn_type == 1:
             poke_to_type[record[0]] = record[1]
         else:
-            if record[2][:-1]:
-                poke_to_type[record[0]] = record[2][:-1]
+            record[2] = record[2].replace('\n', '')
+            if record[2]:
+                poke_to_type[record[0]] = record[2]
             else:
                 poke_to_type[record[0]] = "none"
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成

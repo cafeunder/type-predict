@@ -72,7 +72,7 @@ def main():
                                         repeat=False, shuffle=False)
 
     # 最適化手法の設定
-    optimizer = optimizers.MomentumSGD(lr=0.01, momentum=0.9)
+    optimizer = optimizers.Adam()
     optimizer.setup(model)
 
     # 学習の設定
