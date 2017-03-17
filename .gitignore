@@ -8,7 +8,7 @@ __pycache__
 test.txt
 train.txt
 model_final*
-/train_data
+/image
 /test_image
 /img
 *.pyc

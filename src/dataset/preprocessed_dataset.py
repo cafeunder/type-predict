@@ -8,8 +8,8 @@ import chainer
 
 
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
-    def __init__(self, path, root, mean):
-        self.base = chainer.datasets.LabeledImageDataset(path, root)
+    def __init__(self, path, mean):
+        self.base = chainer.datasets.LabeledImageDataset(path)
         self.mean = mean.astype('f')
 
     def __len__(self):
