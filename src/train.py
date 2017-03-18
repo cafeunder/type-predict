@@ -166,7 +166,7 @@ def main():
                                         repeat=False, shuffle=False)
 
     # 最適化手法の設定
-    optimizer = optimizers.Adam()
+    optimizer = optimizers.Adam(0.01)
     optimizer.setup(model)
 
     # 学習の設定
@@ -203,7 +203,7 @@ def main():
     # 学習後のモデルの保存
     chainer.serializers.save_npz(
         os.path.join(args.root + '/type' + str(args.learn_type),
-                     'model_final_type'), model)
+                     'model_final'), model)
 
 
 if __name__ == '__main__':
