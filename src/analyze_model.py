@@ -71,7 +71,7 @@ def main():
     poke_dict_file = open(args.dictdir, 'r')  # ポケモンとそのタイプを記述してあるファイル
     poke_to_type = {}  # ポケモン→タイプの辞書
     for poke in poke_dict_file:
-        record = poke.split(',')
+       record = poke.split(',')
         record[2] = record[2].replace('\n', '')
         if record[2]:
             poke_to_type[record[0]] = (record[1], record[2])
@@ -114,9 +114,9 @@ def main():
             total_count_image += 1
         print(poke_name + " accuracy")
         print("  type1[" + str(int(float(success_count_poke[0]) / total_count_poke * 100)) + "%] type2[" + str(int(float(success_count_poke[1]) / total_count_poke * 100)) + "%] perfect[" + str(int(float(success_count_poke[2]) / total_count_poke * 100)) + "%]")
-    print("type1 accuracy : " + str(int(float(success_count_image[0]) / total_count_image * 100 + "%"))
-    print("type2 accuracy : " + str(int(float(success_count_image[1]) / total_count_image) * 100 + "%"))
-    print("perfect accuracy : " + str(int(float(success_count_image[2]) / total_count_image) * 100 + "%"))
+    print("type1 accuracy : " + str(float(success_count_image[0]) / total_count_image))
+    print("type2 accuracy : " + str(float(success_count_image[1]) / total_count_image))
+    print("perfect accuracy : " + str(float(success_count_image[2]) / total_count_image))
 
 if __name__ == '__main__':
     main()
