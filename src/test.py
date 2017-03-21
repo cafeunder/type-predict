@@ -47,8 +47,7 @@ def make_model(model_path, learn_type):
         out_size = 19
     model = alexnet.Alex(out_size, False)
     model = L.Classifier(model)
-    chainer.serializers.load_npz(model_path + "_type" + str(learn_type),
-                                 model)
+    chainer.serializers.load_npz(model_path, model)
     return model, out_size
 
 

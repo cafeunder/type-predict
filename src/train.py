@@ -109,7 +109,7 @@ def main():
     parser = argparse.ArgumentParser(description='Type Prediction: Pokemon')
     parser.add_argument('--learn_type', type=int, default=1,
                         help='Type number to learn')
-    parser.add_argument('--imgdir', default='../image/',
+    parser.add_argument('--imgdir', default='../image',
                         help='Path to directory of image file')
     parser.add_argument('--root', default='../data', help='')
     parser.add_argument('--batchsize', '-B', type=int, default=32,
@@ -132,7 +132,7 @@ def main():
     make_dataset(args.learn_type,
                  args.root + '/type' + str(args.learn_type) + '/train.txt',
                  args.root + '/type' + str(args.learn_type) + '/test.txt',
-                 '../labels.txt', '../dictionary.csv', args.imgdir)
+                 '../labels.txt', '../dictionary.csv', args.imgdir + '/type' + str(args.learn_type) + '/')
 
     # 学習に用いる画像の平均画像を計算
     compute_mean(args.root + '/type' + str(args.learn_type) + '/train.txt',

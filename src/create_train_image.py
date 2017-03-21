@@ -101,7 +101,8 @@ if __name__ == '__main__':
             os.makedirs(args.dstdir + "/" + img_name.split("_")[0])
         print(img_name)
 
-        image = scale_augmentation(add_background(filename))
+        # image = scale_augmentation(add_background(filename))
+        image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
 
         # ファイルに書き出し
         cv2.imwrite(args.dstdir + "/" + img_name.split("_")[0]

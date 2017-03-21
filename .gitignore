@@ -14,3 +14,4 @@ model_final*
 *.pyc
 /gif
 /png
+/train_data

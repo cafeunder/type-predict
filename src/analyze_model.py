@@ -17,33 +17,21 @@ from test import *
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
-    parser.add_argument('--model', default='../result/model_final',
-                        help='Path to learned model')
-    parser.add_argument('--mean1', default='../mean1.npy',
-                        help='path to mean array')
-    parser.add_argument('--mean2', default='../mean2.npy',
-                        help='path to mean array')
+    parser.add_argument('--root', default='../data', help='')
     parser.add_argument('--label', default='../labels.txt',
                         help='Path to label file')
     parser.add_argument('--dictdir', default='../dictionary.csv',
                         help='Path to dictionary file (Pokemon to Type)')
-    parser.add_argument('--gpu', '-g', type=int, default=-1,
-                        help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--imgdir', help='Path to image directory')
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
-    model_type1, out_size_type1 = make_model(args.model, 1)
-    model_type2, out_size_type2 = make_model(args.model, 2)
-
-    if args.gpu >= 0:
-        chainer.cuda.get_device(args.gpu).use()
-        model_type1.to_gpu()
-        model_type2.to_gpu()
+    model_type1, out_size_type1 = make_model(args.root + '/type1/model_final', 1)
+    model_type2, out_size_type2 = make_model(args.root + '/type2/model_final', 2)
 
     # 平均画像の読み込み
-    mean1 = np.load(args.mean1)
-    mean2 = np.load(args.mean2)
+    mean1 = np.load(args.root + '/type1/mean.npy')
+    mean2 = np.load(args.root + '/type2/mean.npy')
 
     # 推定されたタイプを出力
     type_file = open(args.label, 'r')
@@ -71,7 +59,7 @@ def main():
     poke_dict_file = open(args.dictdir, 'r')  # ポケモンとそのタイプを記述してあるファイル
     poke_to_type = {}  # ポケモン→タイプの辞書
     for poke in poke_dict_file:
-       record = poke.split(',')
+        record = poke.split(',')
         record[2] = record[2].replace('\n', '')
         if record[2]:
             poke_to_type[record[0]] = (record[1], record[2])
