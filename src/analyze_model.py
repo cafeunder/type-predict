@@ -83,6 +83,9 @@ def main():
             # 画像からタイプ2を予測
             y_type2 = F.softmax(model_type2.predictor(np.array([preprocess_image(image, mean2, 224)])))
             y_type2 = np.argmax(y_type2.data)
+            if y_type1 == type_to_int[poke_to_type[poke_name][0]]:
+                success_count_image[0] += 1
+                success_count_poke[0] += 1
             if y_type2 == type_to_int[poke_to_type[poke_name][1]]:
                 success_count_image[1] += 1
                 success_count_poke[1] += 1
