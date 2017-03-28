@@ -44,7 +44,7 @@ def scale_augmentation(image):
     ついでにHorizontal Flipもする
     """
     CROP_SIZE = 224
-    RESIZE_MIN, RESIZE_MAX = 224, 360
+    RESIZE_MIN, RESIZE_MAX = 224, 280
 
     # 元画像の読み込みとサイズの取得
     src_width = len(image[0])
