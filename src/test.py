@@ -14,9 +14,17 @@ from models import alexnet
 
 def preprocess_image(path, mean, insize):
     mean = mean.astype('f')
-    f = Image.open(path)
+    f = Image.open(path).convert('RGB')
+
+    # 縦横比を変えずinsize x insizeにリサイズ
+    width, height = f.size
+    rate = float(insize) / max(width, height)
+    f = f.resize((int(width * rate), int(height * rate)), Image.ANTIALIAS)
+    background = Image.new('RGB', (insize, insize), (0, 0, 0))
+    background.paste(f, (0, 0))
+
     try:
-        image = np.asarray(f, np.float32)
+        image = np.asarray(background, np.float32)
     finally:
         if hasattr(f, 'close'):
             f.close()
@@ -25,17 +33,12 @@ def preprocess_image(path, mean, insize):
     # rate = float(insize) / min(width, height)
     # img = cv2.resize(img, (int(width * rate), int(height * rate)))
     # image = np.asarray(img, dtype=np.float32)
+
     if image.ndim == 2:
         # 画像の次元数が2の場合，1次元分足す
         image = image[:, :, np.newaxis]
     image = image.transpose(2, 0, 1)
 
-    # _, h, w = image.shape
-    # top = (h - insize) // 2
-    # left = (w - insize) // 2
-    # bottom = top + insize
-    # right = left + insize
-    # image = image[0:3, top:bottom, left:right]
     image -= mean
     image *= (1.0 / 255.0)
     return image
