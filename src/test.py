@@ -14,14 +14,14 @@ from models import alexnet
 
 def preprocess_image(path, mean, insize):
     mean = mean.astype('f')
-    f = Image.open(path).convert('RGB')
+    f = Image.open(path).convert('RGBA')
 
     # 縦横比を変えずinsize x insizeにリサイズ
     width, height = f.size
     rate = float(insize) / max(width, height)
     f = f.resize((int(width * rate), int(height * rate)), Image.ANTIALIAS)
-    background = Image.new('RGB', (insize, insize), (0, 0, 0))
-    background.paste(f, (0, 0))
+    background = Image.new('RGB', (insize, insize), (255, 255, 255))
+    background.paste(f, (0, 0), f.split()[3])
 
     try:
         image = np.asarray(background, np.float32)
