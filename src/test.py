@@ -28,11 +28,6 @@ def preprocess_image(path, mean, insize):
     finally:
         if hasattr(f, 'close'):
             f.close()
-    # img = cv2.imread(path)
-    # width, height = np.shape(img)[0], np.shape(img)[1]
-    # rate = float(insize) / min(width, height)
-    # img = cv2.resize(img, (int(width * rate), int(height * rate)))
-    # image = np.asarray(img, dtype=np.float32)
 
     if image.ndim == 2:
         # 画像の次元数が2の場合，1次元分足す
