@@ -9,6 +9,7 @@ import chainer
 import chainer.links as L
 import chainer.functions as F
 import cv2
+import random
 from PIL import Image
 from models import alexnet
 
@@ -20,7 +21,8 @@ def preprocess_image(path, mean, insize):
     width, height = f.size
     rate = float(insize) / max(width, height)
     f = f.resize((int(width * rate), int(height * rate)), Image.ANTIALIAS)
-    background = Image.new('RGB', (insize, insize), (255, 255, 255))
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    background = Image.new('RGB', (insize, insize), color)
     background.paste(f, (0, 0), f.split()[3])
 
     try:
