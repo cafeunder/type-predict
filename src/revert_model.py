@@ -8,7 +8,7 @@ size = 1024 * 1024 * 99  # 99MB
 
 # サブファイルをマージして、モデルデータを復元する
 def merge_model(basename, modelname):
-    chunk_list = glob.glob(basename + "/chunk*")
+    chunk_list = glob.glob(basename + "/*")
     dst = open(modelname, "wb")
     for chunk in chunk_list:
         print(chunk)
