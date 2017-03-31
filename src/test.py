@@ -19,18 +19,22 @@ def nine_test(path, mean, model, gpu=-1):
     max_val = {}
     for si in range(3):
         for ai in range(3):
+            t = 0
+            v = 0
             if gpu == -1:
-                y_type1 = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                y_type = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                t = np.argmax(y_type)
+                v = np.max(y_type[0])
             else:
-                y_type1 = F.softmax(model_type1.predictor(chainer.cuda.cupy.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                y_type = F.softmax(model.predictor(chainer.cuda.cupy.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                t = int(chainer.cuda.cupy.argmax(y_type))
+                v = float(chainer.cuda.cupy.max(y_type[0]))
 
-            t = np.argmax(y_type1)
             if t not in max_type:
                 max_type[t] = 0
                 max_val[t] = 0
             max_type[t] += 1
 
-            v = np.max(y_type1[0])
             if v > max_val[t]:
                 max_val[t] = v
 
