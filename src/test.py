@@ -3,7 +3,6 @@
 学習したモデルをテストするプログラム
 """
 import argparse
-
 import numpy as np
 import chainer
 import chainer.links as L
@@ -12,6 +11,7 @@ import cv2
 import random
 from PIL import Image
 from models import alexnet
+
 
 def preprocess_image(path, mean, insize):
     mean = mean.astype('f')
@@ -65,11 +65,18 @@ def main():
     parser.add_argument('--label', default='../labels.txt',
                         help='Path to label file')
     parser.add_argument('--img', help='Path to image file')
+    parser.add_argument('--gpu', '-g', type=int, default=-1,
+                        help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
-    model_type1, out_size_type1 = make_model(args.root + '/type1/model_final', 1)
-    model_type2, out_size_type2 = make_model(args.root + '/type2/model_final', 2)
+    model_type1, out_size_type1 = make_model(args.root + '/type1/model_final',
+                                             1)
+    model_type2, out_size_type2 = make_model(args.root + '/type2/model_final',
+                                             2)
+    if args.gpu >= 0:
+        model_type1.to_gpu()
+        model_type2.to_gpu()
 
     # 平均画像の読み込み
     mean1 = np.load(args.root + '/type1/mean.npy')
@@ -80,16 +87,31 @@ def main():
     type_list = type_file.read().split("\n")
 
     # 画像からタイプを予測
-    y_type1 = F.softmax(model_type1.predictor(np.array([preprocess_image(args.img, mean1, 224)]))).data
+    if args.gpu >= 0:
+        y_type1 = F.softmax(model_type1.predictor(
+            chainer.cuda.cupy.array(
+                [preprocess_image(args.img, mean1, 224)]))).data
+    else:
+        y_type1 = F.softmax(model_type1.predictor(
+            np.array([preprocess_image(args.img, mean1, 224)])
+        )).data
 
     for i in range(out_size_type1):
         if type_list[i] == "":
             break
         print(type_list[i], ":", str(int(y_type1[0][i] * 100)), "%")
-    print("Type1 of this image is : " + type_list[np.argmax(y_type1)])
+    print("Type1 of this image is : " + type_list[
+        np.argmax(y_type1)])
 
     # 画像からタイプを予測
-    y_type2 = F.softmax(model_type2.predictor(np.array([preprocess_image(args.img, mean2, 224)]))).data
+    if args.gpu >= 0:
+        y_type2 = F.softmax(model_type2.predictor(
+            chainer.cuda.cupy.array(
+                [preprocess_image(args.img, mean2, 224)]))).data
+    else:
+        y_type2 = F.softmax(model_type2.predictor(
+            np.array([preprocess_image(args.img, mean2, 224)])
+        )).data
 
     for i in range(out_size_type2):
         if type_list[i] == "":
@@ -97,6 +119,7 @@ def main():
         print(type_list[i], ":", str(int(y_type2[0][i] * 100)), "%")
     print("Type2 of this image is : " + type_list[np.argmax(y_type2)])
     print(type_list[np.argmax(y_type1)] + "," + type_list[np.argmax(y_type2)])
+
 
 if __name__ == '__main__':
     main()
