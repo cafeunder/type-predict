@@ -13,17 +13,60 @@ import random
 from PIL import Image
 from models import alexnet
 
-def preprocess_image(path, mean, insize):
+def nine_test(path, mean, model):
+    size = [168, 224, 280]
+
+    max_type = {}
+    max_val = {}
+    for si in range(3):
+        for ai in range(3):
+            y_type1 = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+            t = np.argmax(y_type1)
+            if t not in max_type:
+                max_type[t] = 0
+                max_val[t] = 0
+            max_type[t] += 1
+
+            v = np.max(y_type1[0])
+            if v > max_val[t]:
+                max_val[t] = v
+
+    result = 0
+    result_num = 0
+    result_val = 0
+    for key in max_type:
+        if max_type[key] > result_num or (max_type[key] == result_num and max_val[key] > result_val):
+            result = key
+            result_num = max_type[key]
+            result_val = max_val[key]
+
+    return result
+
+
+
+def preprocess_image(path, mean, insize, exp, align=0):
     mean = mean.astype('f')
     f = Image.open(path).convert('RGBA')
 
     # 縦横比を変えずinsize x insizeにリサイズ
     width, height = f.size
-    rate = float(insize) / max(width, height)
+    rate = float(exp) / max(width, height)
     f = f.resize((int(width * rate), int(height * rate)), Image.ANTIALIAS)
+
+    width, height = f.size
     color = (255, 255, 255)
     background = Image.new('RGB', (insize, insize), color)
-    background.paste(f, (0, 0), f.split()[3])
+
+    x = 0
+    y = 0
+    if align == 1:
+        x = int((insize - width) / 2)
+        y = int((insize - height) / 2)
+    elif align == 2:
+        x = int(insize - width)
+        y = int(insize - height)
+
+    background.paste(f, (x, y), f.split()[3])
 
     try:
         image = np.asarray(background, np.float32)
@@ -80,23 +123,8 @@ def main():
     type_list = type_file.read().split("\n")
 
     # 画像からタイプを予測
-    y_type1 = F.softmax(model_type1.predictor(np.array([preprocess_image(args.img, mean1, 224)]))).data
-
-    for i in range(out_size_type1):
-        if type_list[i] == "":
-            break
-        print(type_list[i], ":", str(int(y_type1[0][i] * 100)), "%")
-    print("Type1 of this image is : " + type_list[np.argmax(y_type1)])
-
-    # 画像からタイプを予測
-    y_type2 = F.softmax(model_type2.predictor(np.array([preprocess_image(args.img, mean2, 224)]))).data
-
-    for i in range(out_size_type2):
-        if type_list[i] == "":
-            break
-        print(type_list[i], ":", str(int(y_type2[0][i] * 100)), "%")
-    print("Type2 of this image is : " + type_list[np.argmax(y_type2)])
-    print(type_list[np.argmax(y_type1)] + "," + type_list[np.argmax(y_type2)])
+    type1 = nine_test(args.img, mean1, model_type1)
+    type2 = nine_test(args.img, mean2, model_type2)
 
 if __name__ == '__main__':
     main()
