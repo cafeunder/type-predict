@@ -21,7 +21,7 @@ def nine_test(path, mean, model, gpu=-1):
         for ai in range(3):
             if gpu == -1:
                 y_type1 = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
-            else 
+            else:
                 y_type1 = F.softmax(model_type1.predictor(chainer.cuda.cupy.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
 
             t = np.argmax(y_type1)
@@ -135,8 +135,8 @@ def main():
     type1 = nine_test(args.img, mean1, model_type1)
     type2 = nine_test(args.img, mean2, model_type2)
 
-    print("Type1 of this image is : " + type1)
-    print("Type2 of this image is : " + type2)
+    print("Type1 of this image is : " + type_list[type1])
+    print("Type2 of this image is : " + type_list[type2])
 
 
 if __name__ == '__main__':
