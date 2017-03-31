@@ -9,16 +9,7 @@ import random
 import argparse
 import glob
 
-def add_background(filename):
-    # 拡張子を除いた画像名を取得
-    base, ext = os.path.splitext(filename)
-
-    # 名前-フォルムの部分を抽出
-    name = base.split('_')[0]
-
-    # 画像読み込み
-    src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
-
+def add_background(src):
     # マスクの取り出し
     mask = cv2.cvtColor(src[:,:,3], cv2.COLOR_GRAY2RGB)
     mask = mask / 255.0
@@ -43,8 +34,8 @@ def scale_augmentation(image):
     Scale Augmentationを行う
     ついでにHorizontal Flipもする
     """
-    CROP_SIZE = 224
-    RESIZE_MIN, RESIZE_MAX = 224, 280
+    SIZE = 224
+    RESIZE_MIN, RESIZE_MAX = 168, 280
 
     # 元画像の読み込みとサイズの取得
     src_width = len(image[0])
@@ -54,8 +45,8 @@ def scale_augmentation(image):
     # [RESIZE_MIN, RESIZE_MAX]の範囲でランダムにリサイズする
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
 
-    # 短辺方向の比率を計算
-    rate = size / float(src_height) if (src_height < src_width) else size / float(src_width)
+    # 長辺方向の比率を計算
+    rate = size / float(src_height) if (src_height > src_width) else size / float(src_width)
 
     # 元画像を拡大
     expand = cv2.resize(image, (int(src_width * rate + 0.5), int(src_height * rate + 0.5)))
@@ -66,13 +57,21 @@ def scale_augmentation(image):
     if random.randint(0, 1) == 1:
         expand = cv2.flip(expand, 1)
 
-    # ランダムな位置を取り出す
-    x = random.randint(0, exp_width - CROP_SIZE) if exp_width > CROP_SIZE else 0
-    y = random.randint(0,
-                       exp_height - CROP_SIZE) if exp_height > CROP_SIZE else 0
-
     # 矩形領域に貼り付け
-    dst = expand[y:y + CROP_SIZE, x:x + CROP_SIZE]
+    if exp_width > SIZE:
+        x = random.randint(0, exp_width - SIZE)
+        exp_width = SIZE
+        expand = expand[0:exp_height, x:x + exp_width]
+    if exp_height > SIZE:
+        y = random.randint(0, exp_height - SIZE)
+        exp_height = SIZE
+        expand = expand[y: y + exp_height, 0:exp_width]
+
+    # ランダムな位置を取り出す
+    x = random.randint(0, SIZE - exp_width)
+    y = random.randint(0, SIZE - exp_height)
+    dst = np.zeros((SIZE, SIZE, 4), dtype='uint8')
+    dst[y:y + exp_height, x:x + exp_width] = expand
     return dst
 
 
@@ -101,8 +100,8 @@ if __name__ == '__main__':
             os.makedirs(args.dstdir + "/" + img_name.split("_")[0])
         print(img_name)
 
-        # image = scale_augmentation(add_background(filename))
-        image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+        src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+        image = add_background(scale_augmentation(src))
 
         # ファイルに書き出し
         cv2.imwrite(args.dstdir + "/" + img_name.split("_")[0]

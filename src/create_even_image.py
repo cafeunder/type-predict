@@ -62,6 +62,8 @@ if __name__ == '__main__':
             if not os.path.exists(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0]):
                 os.makedirs(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0])
 
-            image = scale_augmentation(add_background(filename))
+            src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+            image = add_background(scale_augmentation(src))
+
             cv2.imwrite(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0]
                         + "/" + img_name.split('_')[0] + "_" + str(i) + ".png", image)

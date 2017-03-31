@@ -43,10 +43,16 @@ if __name__ == '__main__':
                 type_to_poke[type2].append(poke)
 
     # 各タイプから画像を取り出す
-    count = 0
     for type in type_to_poke:
         for poke in type_to_poke[type]:
             image_list = glob.glob(args.imgdir + '/' + poke + '/*.png')
+            total_rate = 0
+            count = 0
             for image_name in image_list:
+                src = cv2.imread(image_name, cv2.IMREAD_UNCHANGED)
+                height = len(src)
+                width = len(src[0])
+                total_rate += float(height) / width
                 count += 1
+            print(poke + ' : ' + str(total_rate / count))
     print(count)
