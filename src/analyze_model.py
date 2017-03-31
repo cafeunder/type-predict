@@ -14,6 +14,7 @@ from PIL import Image
 from models import alexnet
 from test import *
 
+os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
@@ -23,11 +24,20 @@ def main():
     parser.add_argument('--dictdir', default='../dictionary.csv',
                         help='Path to dictionary file (Pokemon to Type)')
     parser.add_argument('--imgdir', help='Path to image directory')
+    parser.add_argument('--gpu', '-g', type=int, default=-1,
+                        help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
+
+    if args.gpu >= 0:
+        # GPUを使用する場合，GPUメソッドを指定
+        chainer.cuda.get_device(args.gpu).use()
 
     # 学習済みモデルの読み込み
     model_type1, out_size_type1 = make_model(args.root + '/type1/model_final', 1)
     model_type2, out_size_type2 = make_model(args.root + '/type2/model_final', 2)
+    if args.gpu >= 0:
+        model_type1.to_gpu()
+        model_type2.to_gpu()
 
     # 平均画像の読み込み
     mean1 = np.load(args.root + '/type1/mean.npy')
@@ -76,8 +86,8 @@ def main():
         image_list = glob.glob(os.path.join(args.imgdir, poke_name) + "/*.png")
         # 訓練データとテストデータを作成
         for image in image_list:
-            y_type1 = nine_test(image, mean1, model_type1)
-            y_type2 = nine_test(image, mean2, model_type2)
+            y_type1 = nine_test(image, mean1, model_type1, args.gpu)
+            y_type2 = nine_test(image, mean2, model_type2, args.gpu)
 
             if y_type1 == type_to_int[poke_to_type[poke_name][0]]:
                 success_count_image[0] += 1

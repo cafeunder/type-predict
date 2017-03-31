@@ -3,7 +3,6 @@
 学習したモデルをテストするプログラム
 """
 import argparse
-
 import numpy as np
 import chainer
 import chainer.links as L
@@ -13,14 +12,18 @@ import random
 from PIL import Image
 from models import alexnet
 
-def nine_test(path, mean, model):
+def nine_test(path, mean, model, gpu=-1):
     size = [168, 224, 280]
 
     max_type = {}
     max_val = {}
     for si in range(3):
         for ai in range(3):
-            y_type1 = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+            if gpu == -1:
+                y_type1 = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+            else 
+                y_type1 = F.softmax(model_type1.predictor(chainer.cuda.cupy.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+
             t = np.argmax(y_type1)
             if t not in max_type:
                 max_type[t] = 0
@@ -41,7 +44,6 @@ def nine_test(path, mean, model):
             result_val = max_val[key]
 
     return result
-
 
 
 def preprocess_image(path, mean, insize, exp, align=0):
@@ -108,11 +110,18 @@ def main():
     parser.add_argument('--label', default='../labels.txt',
                         help='Path to label file')
     parser.add_argument('--img', help='Path to image file')
+    parser.add_argument('--gpu', '-g', type=int, default=-1,
+                        help='GPU ID (negative value indicates CPU)')
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
-    model_type1, out_size_type1 = make_model(args.root + '/type1/model_final', 1)
-    model_type2, out_size_type2 = make_model(args.root + '/type2/model_final', 2)
+    model_type1, out_size_type1 = make_model(args.root + '/type1/model_final',
+                                             1)
+    model_type2, out_size_type2 = make_model(args.root + '/type2/model_final',
+                                             2)
+    if args.gpu >= 0:
+        model_type1.to_gpu()
+        model_type2.to_gpu()
 
     # 平均画像の読み込み
     mean1 = np.load(args.root + '/type1/mean.npy')
@@ -125,6 +134,10 @@ def main():
     # 画像からタイプを予測
     type1 = nine_test(args.img, mean1, model_type1)
     type2 = nine_test(args.img, mean2, model_type2)
+
+    print("Type1 of this image is : " + type1)
+    print("Type2 of this image is : " + type2)
+
 
 if __name__ == '__main__':
     main()
