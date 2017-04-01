@@ -3,6 +3,8 @@
 学習したモデルをテストするプログラム
 """
 import argparse
+import glob
+
 import numpy as np
 import chainer
 import chainer.links as L
@@ -11,6 +13,7 @@ import cv2
 import random
 from PIL import Image
 from models import alexnet
+
 
 def nine_test(path, mean, model, gpu=-1):
     size = [168, 224, 280]
@@ -22,11 +25,13 @@ def nine_test(path, mean, model, gpu=-1):
             t = 0
             v = 0
             if gpu == -1:
-                y_type = F.softmax(model.predictor(np.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                y_type = F.softmax(model.predictor(np.array(
+                    [preprocess_image(path, mean, 224, size[si], ai)]))).data
                 t = np.argmax(y_type)
                 v = np.max(y_type[0])
             else:
-                y_type = F.softmax(model.predictor(chainer.cuda.cupy.array([preprocess_image(path, mean, 224, size[si], ai)]))).data
+                y_type = F.softmax(model.predictor(chainer.cuda.cupy.array(
+                    [preprocess_image(path, mean, 224, size[si], ai)]))).data
                 t = int(chainer.cuda.cupy.argmax(y_type))
                 v = float(chainer.cuda.cupy.max(y_type[0]))
 
@@ -37,12 +42,13 @@ def nine_test(path, mean, model, gpu=-1):
 
             if v > max_val[t]:
                 max_val[t] = v
-
     result = 0
     result_num = 0
     result_val = 0
     for key in max_type:
-        if max_type[key] > result_num or (max_type[key] == result_num and max_val[key] > result_val):
+        if max_type[key] > result_num or (
+                        max_type[key] == result_num and max_val[
+                    key] > result_val):
             result = key
             result_num = max_type[key]
             result_val = max_val[key]
@@ -116,6 +122,8 @@ def main():
     parser.add_argument('--img', help='Path to image file')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
+    parser.add_argument('--all', default=False,
+                        help='Whether to test all images or one image')
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
@@ -135,12 +143,27 @@ def main():
     type_file = open(args.label, 'r')
     type_list = type_file.read().split("\n")
 
-    # 画像からタイプを予測
-    type1 = nine_test(args.img, mean1, model_type1)
-    type2 = nine_test(args.img, mean2, model_type2)
+    if not args.all:
+        # 画像からタイプを予測
+        type1 = nine_test(args.img, mean1, model_type1)
+        type2 = nine_test(args.img, mean2, model_type2)
+        print('Image name is : ' + args.img)
+        print('Type1 of this image is : ' + type_list[type1])
+        print('Type2 of this image is : ' + type_list[type2])
+    else:
+        # フォルダ内に存在する画像を全て取得
+        image_list = glob.glob(args.img + "/*.png")
+        image_list.extend(glob.glob(args.img + "/*.jpg"))
+        image_list.extend(glob.glob(args.img + "/*.jpeg"))
+        # 各画像からタイプを予測
+        for image in image_list:
+            type1 = nine_test(image, mean1, model_type1)
+            type2 = nine_test(image, mean2, model_type2)
+            print('Image name : ' + image)
+            print('Type1 of this image is : ' + type_list[type1])
+            print('Type2 of this image is : ' + type_list[type2])
+            print('')
 
-    print("Type1 of this image is : " + type_list[type1])
-    print("Type2 of this image is : " + type_list[type2])
 
 
 if __name__ == '__main__':
