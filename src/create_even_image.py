@@ -72,7 +72,7 @@ def scale_augmentation(image):
     return dst
 
 if __name__ == '__main__':
-    NO_OF_POKE_EACHTYPE = 2500
+    NO_OF_POKE_EACHTYPE = 10000
 
     parser = argparse.ArgumentParser(description='Test Learned Model')
     parser.add_argument('--type', type=int)
