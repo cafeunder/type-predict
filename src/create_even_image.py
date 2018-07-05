@@ -86,11 +86,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     type_file = open(args.label, 'r')  # 存在するタイプを記述してあるファイル
-    type_list = type_file.read().split("\n")  # 存在するタイプのリスト（和名，英名）
+    type_list = type_file.read().split('\n')  # 存在するタイプのリスト（和名，英名）
     type_to_poke = {}
     for type in type_list:
         # 存在するタイプを辞書に登録
-        if type == "":
+        if type == '':
             break
         type_to_poke[type] = []
 
@@ -120,16 +120,16 @@ if __name__ == '__main__':
             continue
         for i in range(NO_OF_POKE_EACHTYPE):
             poke = random.choice(type_to_poke[type])
-            image_list = glob.glob(os.path.join(args.imgdir, poke) + "/*.png")
-            print(type + " : " + str(i))
+            image_list = glob.glob(os.path.join(args.imgdir, poke) + '/*.png')
+            print(type + ' : ' + str(i))
             filename = random.choice(image_list)
             img_name = os.path.basename(filename)
 
-            if not os.path.exists(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0]):
-                os.makedirs(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0])
+            if not os.path.exists(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0]):
+                os.makedirs(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0])
 
             src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
             image = add_background(scale_augmentation(src))
 
-            cv2.imwrite(args.dstdir + "/type" + str(args.type) + "/" + img_name.split("_")[0]
-                        + "/" + img_name.split('_')[0] + "_" + str(i) + ".png", image)
+            cv2.imwrite(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0]
+                        + '/' + img_name.split('_')[0] + '_' + str(i) + '.png', image)

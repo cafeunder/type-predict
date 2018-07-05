@@ -1,7 +1,7 @@
 # coding:utf-8
-'''
+"""
 githubのファイル制限に引っかからないよう、モデルデータを分割する
-'''
+"""
 import os
 import argparse
 
@@ -9,7 +9,7 @@ size = 1024 * 1024 * 99  # 99MB
 
 # モデルデータを読み込み、サブファイルに分割する
 def divide_model(filename, outdir):
-    file = open(filename, "rb")
+    file = open(filename, 'rb')
     bin = file.read()
     print(len(bin))
 

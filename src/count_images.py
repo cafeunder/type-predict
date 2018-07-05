@@ -13,11 +13,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     type_file = open(args.label, 'r')  # 存在するタイプを記述してあるファイル
-    type_list = type_file.read().split("\n")  # 存在するタイプのリスト（和名，英名）
+    type_list = type_file.read().split('\n')  # 存在するタイプのリスト（和名，英名）
     type_to_poke = {}
     for type in type_list:
         # 存在するタイプを辞書に登録
-        if type == "":
+        if type == '':
             break
         type_to_poke[type] = []
 

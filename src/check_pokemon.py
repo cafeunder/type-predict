@@ -32,7 +32,7 @@ def main():
 
     # 推定されたタイプを出力
     type_file = open(args.label, 'r')
-    type_list = type_file.read().split("\n")
+    type_list = type_file.read().split('\n')
 
     max_type1 = {}
     max_type2 = {}
@@ -49,7 +49,7 @@ def main():
         max_type2[type_list[type2]] += 1
 
     for key in type_list:
-        print("{0} : {1} {2}".format(key, max_type1[key], max_type2[key]))
+        print('{0} : {1} {2}'.format(key, max_type1[key], max_type2[key]))
 
 
 if __name__ == '__main__':

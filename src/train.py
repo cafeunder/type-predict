@@ -34,11 +34,11 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
     # タイプを受け取るとint型の番号を返す辞書を作成
     type_file = open(label_file, 'r')  # 存在するタイプを記述してあるファイル
     type_to_int = {}  # タイプ→番号の辞書
-    type_list = type_file.read().split("\n")  # 存在するタイプのリスト（和名，英名）
+    type_list = type_file.read().split('\n')  # 存在するタイプのリスト（和名，英名）
     cnt = 0
     for type in type_list:
         # 存在するタイプを辞書に登録
-        if type == "":
+        if type == '':
             break
         type_to_int[type] = cnt
         cnt += 1
@@ -47,7 +47,7 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
     poke_dict_file = open(dict_dir, 'r')  # ポケモンとそのタイプを記述してあるファイル
     poke_to_type = {}  # ポケモン→タイプの辞書
     poke_dict = poke_dict_file.read().split(
-        "\n")  # ポケモンとそのタイプのリスト（ポケモン，第一タイプ，第二タイプ）
+        '\n')  # ポケモンとそのタイプのリスト（ポケモン，第一タイプ，第二タイプ）
     for poke in poke_dict:
         record = poke.split(',')
         # ポケモンを辞書に登録
@@ -60,13 +60,13 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
             if record[2]:
                 poke_to_type[record[0]] = record[2]
             else:
-                poke_to_type[record[0]] = "none"
+                poke_to_type[record[0]] = 'none'
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成
     cnts = [0 for i in range(len(type_list))]
     for poke_name in poke_names:
         print(poke_name)
         # 各ポケモンの画像を全て取得
-        image_list = glob.glob(os.path.join(imgdir, poke_name) + "/*.png")
+        image_list = glob.glob(os.path.join(imgdir, poke_name) + '/*.png')
         cnt = 0
         # 訓練データとテストデータを作成
         for image in image_list:
@@ -74,12 +74,12 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
             cnts[type_to_int[poke_to_type[poke_name]]] += 1
             if random.uniform(0.0, 1.0) < 0.75:
                 train.write(
-                    image + " " + str(
-                        type_to_int[poke_to_type[poke_name]]) + "\n")
+                    image + ' ' + str(
+                        type_to_int[poke_to_type[poke_name]]) + '\n')
             else:
                 test.write(
-                    image + " " + str(
-                        type_to_int[poke_to_type[poke_name]]) + "\n")
+                    image + ' ' + str(
+                        type_to_int[poke_to_type[poke_name]]) + '\n')
             cnt += 1
 
     for i in range(len(type_list)):
@@ -173,7 +173,7 @@ def main():
     # 学習の設定
     updater = training.StandardUpdater(train_iter, optimizer, device=args.gpu)
     trainer = training.Trainer(updater, (args.epoch, 'epoch'),
-                               out=args.root + "/type" + str(args.learn_type))
+                               out=args.root + '/type' + str(args.learn_type))
 
     val_interval = (10 if args.test else 100000), 'iteration'
     log_interval = (10 if args.test else 1000), 'iteration'

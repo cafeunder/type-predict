@@ -139,7 +139,7 @@ def main():
 
     # 推定されたタイプを出力
     type_file = open(args.label, 'r')
-    type_list = type_file.read().split("\n")
+    type_list = type_file.read().split('\n')
 
     with chainer.using_config('train', False):
         if not args.all:
@@ -151,9 +151,9 @@ def main():
             print('Type2 of this image is : ' + type_list[type2])
         else:
             # フォルダ内に存在する画像を全て取得
-            image_list = glob.glob(args.img + "/*.png")
-            image_list.extend(glob.glob(args.img + "/*.jpg"))
-            image_list.extend(glob.glob(args.img + "/*.jpeg"))
+            image_list = glob.glob(args.img + '/*.png')
+            image_list.extend(glob.glob(args.img + '/*.jpg'))
+            image_list.extend(glob.glob(args.img + '/*.jpeg'))
             # 各画像からタイプを予測
             for image in image_list:
                 type1 = nine_test(image, mean1, model_type1)

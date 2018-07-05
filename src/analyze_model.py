@@ -45,11 +45,11 @@ def main():
     # タイプを受け取るとint型の番号を返す辞書を作成
     type_file = open(args.label, 'r')  # 存在するタイプを記述してあるファイル
     type_to_int = {}  # タイプ→番号の辞書
-    type_list = type_file.read().split("\n")  # 存在するタイプのリスト（和名，英名）
+    type_list = type_file.read().split('\n')  # 存在するタイプのリスト（和名，英名）
     cnt = 0
     for type in type_list:
         # 存在するタイプを辞書に登録
-        if type == "":
+        if type == '':
             break
         type_to_int[type] = cnt
         cnt += 1
@@ -72,7 +72,7 @@ def main():
         success_count_poke = [0, 0, 0]
 
         # 各ポケモンの画像を全て取得
-        image_list = glob.glob(os.path.join(args.imgdir, poke_name) + "/*.png")
+        image_list = glob.glob(os.path.join(args.imgdir, poke_name) + '/*.png')
         # 訓練データとテストデータを作成
         for image in image_list:
             y_type1 = nine_test(image, mean1, model_type1, args.gpu)
@@ -92,17 +92,17 @@ def main():
             total_count_poke += 1
 
             total_count_image += 1
-        print(poke_name + " accuracy")
-        print("type1["
+        print(poke_name + ' accuracy')
+        print('type1['
               + str(int(float(success_count_poke[0]) / total_count_poke * 100))
-              + "%] type2[" + str(int(float(success_count_poke[1]) / total_count_poke * 100))
-              + "%] perfect[" + str(int(float(success_count_poke[2]) / total_count_poke * 100))
-              + "%]")
-    print("type1 accuracy : "
+              + '%] type2[' + str(int(float(success_count_poke[1]) / total_count_poke * 100))
+              + '%] perfect[' + str(int(float(success_count_poke[2]) / total_count_poke * 100))
+              + '%]')
+    print('type1 accuracy : '
           + str(float(success_count_image[0]) / total_count_image))
-    print("type2 accuracy : "
+    print('type2 accuracy : '
           + str(float(success_count_image[1]) / total_count_image))
-    print("perfect accuracy : "
+    print('perfect accuracy : '
           + str(float(success_count_image[2]) / total_count_image))
 
 
