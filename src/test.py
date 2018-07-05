@@ -144,8 +144,8 @@ def main():
     with chainer.using_config('train', False):
         if not args.all:
             # 画像からタイプを予測
-            type1 = nine_test(args.img, mean1, model_type1)
-            type2 = nine_test(args.img, mean2, model_type2)
+            type1 = nine_test(args.img, mean1, model_type1, args.gpu)
+            type2 = nine_test(args.img, mean2, model_type2, args.gpu)
             print('Image name is : ' + args.img)
             print('Type1 of this image is : ' + type_list[type1])
             print('Type2 of this image is : ' + type_list[type2])
@@ -156,8 +156,8 @@ def main():
             image_list.extend(glob.glob(args.img + '/*.jpeg'))
             # 各画像からタイプを予測
             for image in image_list:
-                type1 = nine_test(image, mean1, model_type1)
-                type2 = nine_test(image, mean2, model_type2)
+                type1 = nine_test(image, mean1, model_type1, args.gpu)
+                type2 = nine_test(image, mean2, model_type2, args.gpu)
                 print('Image name : ' + image)
                 print('Type1 of this image is : ' + type_list[type1])
                 print('Type2 of this image is : ' + type_list[type2])
