@@ -1,6 +1,7 @@
 # coding:utf-8
 """
 学習したモデルをテストするプログラム
+指定したフォルダ直下にある各ポケモンのフォルダ内の画像に対するaccuracyを計算します
 """
 import os
 from test import *
