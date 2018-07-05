@@ -7,6 +7,7 @@ from test import *
 
 os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'
 
+
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
     parser.add_argument('--root', default='../data', help='')
@@ -33,10 +34,6 @@ def main():
     # 平均画像の読み込み
     mean1 = np.load(args.root + '/type1/mean.npy')
     mean2 = np.load(args.root + '/type2/mean.npy')
-
-    # 推定されたタイプを出力
-    type_file = open(args.label, 'r')
-    type_list = type_file.read().split("\n")
 
     poke_names = []  # ポケモンの名前のリスト
     # 画像データとして存在するポケモンの名前をリストに追加
@@ -87,17 +84,26 @@ def main():
                 success_count_image[1] += 1
                 success_count_poke[1] += 1
 
-            if y_type1 == type_to_int[poke_to_type[poke_name][0]] and y_type2 == type_to_int[poke_to_type[poke_name][1]]:
+            if y_type1 == type_to_int[poke_to_type[poke_name][0]]\
+                    and y_type2 == type_to_int[poke_to_type[poke_name][1]]:
                 success_count_image[2] += 1
                 success_count_poke[2] += 1
             total_count_poke += 1
 
             total_count_image += 1
         print(poke_name + " accuracy")
-        print("  type1[" + str(int(float(success_count_poke[0]) / total_count_poke * 100)) + "%] type2[" + str(int(float(success_count_poke[1]) / total_count_poke * 100)) + "%] perfect[" + str(int(float(success_count_poke[2]) / total_count_poke * 100)) + "%]")
-    print("type1 accuracy : " + str(float(success_count_image[0]) / total_count_image))
-    print("type2 accuracy : " + str(float(success_count_image[1]) / total_count_image))
-    print("perfect accuracy : " + str(float(success_count_image[2]) / total_count_image))
+        print("type1["
+              + str(int(float(success_count_poke[0]) / total_count_poke * 100))
+              + "%] type2[" + str(int(float(success_count_poke[1]) / total_count_poke * 100))
+              + "%] perfect[" + str(int(float(success_count_poke[2]) / total_count_poke * 100))
+              + "%]")
+    print("type1 accuracy : "
+          + str(float(success_count_image[0]) / total_count_image))
+    print("type2 accuracy : "
+          + str(float(success_count_image[1]) / total_count_image))
+    print("perfect accuracy : "
+          + str(float(success_count_image[2]) / total_count_image))
+
 
 if __name__ == '__main__':
     main()
