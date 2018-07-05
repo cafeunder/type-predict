@@ -143,27 +143,27 @@ def main():
     type_file = open(args.label, 'r')
     type_list = type_file.read().split("\n")
 
-    if not args.all:
-        # 画像からタイプを予測
-        type1 = nine_test(args.img, mean1, model_type1)
-        type2 = nine_test(args.img, mean2, model_type2)
-        print('Image name is : ' + args.img)
-        print('Type1 of this image is : ' + type_list[type1])
-        print('Type2 of this image is : ' + type_list[type2])
-    else:
-        # フォルダ内に存在する画像を全て取得
-        image_list = glob.glob(args.img + "/*.png")
-        image_list.extend(glob.glob(args.img + "/*.jpg"))
-        image_list.extend(glob.glob(args.img + "/*.jpeg"))
-        # 各画像からタイプを予測
-        for image in image_list:
-            type1 = nine_test(image, mean1, model_type1)
-            type2 = nine_test(image, mean2, model_type2)
-            print('Image name : ' + image)
+    with chainer.using_config('train', False):
+        if not args.all:
+            # 画像からタイプを予測
+            type1 = nine_test(args.img, mean1, model_type1)
+            type2 = nine_test(args.img, mean2, model_type2)
+            print('Image name is : ' + args.img)
             print('Type1 of this image is : ' + type_list[type1])
             print('Type2 of this image is : ' + type_list[type2])
-            print('')
-
+        else:
+            # フォルダ内に存在する画像を全て取得
+            image_list = glob.glob(args.img + "/*.png")
+            image_list.extend(glob.glob(args.img + "/*.jpg"))
+            image_list.extend(glob.glob(args.img + "/*.jpeg"))
+            # 各画像からタイプを予測
+            for image in image_list:
+                type1 = nine_test(image, mean1, model_type1)
+                type2 = nine_test(image, mean2, model_type2)
+                print('Image name : ' + image)
+                print('Type1 of this image is : ' + type_list[type1])
+                print('Type2 of this image is : ' + type_list[type2])
+                print('')
 
 
 if __name__ == '__main__':
