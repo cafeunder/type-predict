@@ -1,8 +1,11 @@
 # coding:utf-8
 """
 学習したモデルをテストするプログラム
+指定したポケモンのフォルダ内の各画像に対してタイプ推定を行い，
+各タイプとして推定される画像が何枚ずつあったかを表示する
 """
 from test import *
+
 
 def main():
     parser = argparse.ArgumentParser(description='Test Learned Model')
