@@ -2,16 +2,6 @@
 """
 学習したモデルをテストするプログラム
 """
-import argparse
-import numpy as np
-import chainer
-import chainer.links as L
-import chainer.functions as F
-import cv2
-import random
-import glob
-from PIL import Image
-from models import alexnet
 from test import *
 
 def main():

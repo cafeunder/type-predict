@@ -2,7 +2,6 @@
 '''
 AlexNetのクラス
 '''
-import chainer
 import chainer.links as L
 import chainer.functions as F
 from chainer import Chain

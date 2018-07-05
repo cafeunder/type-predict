@@ -2,16 +2,7 @@
 """
 学習したモデルをテストするプログラム
 """
-import argparse
-
-import numpy as np
-import chainer
-import chainer.links as L
-import cv2
 import os
-import glob
-from PIL import Image
-from models import alexnet
 from test import *
 
 os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'

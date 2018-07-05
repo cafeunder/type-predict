@@ -2,8 +2,6 @@
 """
 学習に用いるデータセットを定義するクラス
 """
-import random
-
 import chainer
 
 

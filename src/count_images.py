@@ -1,7 +1,6 @@
 # coding:utf-8
 import os
 import argparse
-import random
 import glob
 from create_train_image import *
 

@@ -3,7 +3,6 @@
 githubのファイル制限に引っかからないよう、モデルデータを分割する
 '''
 import os
-import glob
 import argparse
 
 size = 1024 * 1024 * 99  # 99MB
