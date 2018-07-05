@@ -6,6 +6,7 @@ import glob
 
 size = 1024 * 1024 * 99  # 99MB
 
+
 # サブファイルをマージして、モデルデータを復元する
 def merge_model(basename, modelname):
     chunk_list = glob.glob(basename + '/chunk*')

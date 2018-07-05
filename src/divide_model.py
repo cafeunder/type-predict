@@ -7,6 +7,7 @@ import argparse
 
 size = 1024 * 1024 * 99  # 99MB
 
+
 # モデルデータを読み込み、サブファイルに分割する
 def divide_model(filename, outdir):
     file = open(filename, 'rb')
