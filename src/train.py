@@ -22,6 +22,7 @@ os.environ['PATH'] += ':/usr/local/cuda-8.0/bin'
 
 def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
                  imgdir):
+    print('make dataset')
     poke_names = []  # ポケモンの名前のリスト
     # 画像データとして存在するポケモンの名前をリストに追加
     for name in os.listdir(imgdir):
@@ -64,10 +65,9 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成
     cnts = [0 for _ in range(len(type_list))]
     for poke_name in poke_names:
-        print(poke_name)
+        print('poke name :', poke_name)
         # 各ポケモンの画像を全て取得
         image_list = glob.glob(os.path.join(imgdir, poke_name) + '/*.png')
-        cnt = 0
         # 訓練データとテストデータを作成
         for image in image_list:
             # 各ポケモンの画像の3/4は訓練データに，1/4はテストデータにする
@@ -80,10 +80,11 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
                 test.write(
                     image + ' ' + str(
                         type_to_int[poke_to_type[poke_name]]) + '\n')
-            cnt += 1
 
     for i in range(len(type_list)):
-        print(type_list[i], cnts[i])
+        if type_list[i] == '':
+            break
+        print('type : ' + type_list[i] + ', image num : ' + str(cnts[i]))
     type_file.close()
     train.close()
     test.close()
@@ -120,12 +121,8 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--initmodel', default='',
                         help='Initialize the model from given file')
-    parser.add_argument('--resume', '-r', default='',
-                        help='Initialize the trainer from given file')
     parser.add_argument('--val_batchsize', '-b', type=int, default=250,
                         help='Validation minibatch size')
-    parser.add_argument('--test', action='store_true')
-    parser.set_defaults(test=False)
     args = parser.parse_args()
 
     # 学習に用いるデータセットを作成
@@ -176,8 +173,8 @@ def main():
     trainer = training.Trainer(updater, (args.epoch, 'epoch'),
                                out=args.root + '/type' + str(args.learn_type))
 
-    val_interval = (10 if args.test else 100000), 'iteration'
-    log_interval = (10 if args.test else 1000), 'iteration'
+    val_interval = 100000, 'iteration'
+    log_interval = 1000, 'iteration'
 
     # 学習後の評価の設定
     # エポック終了毎に評価される
@@ -196,10 +193,8 @@ def main():
          'validation/main/accuracy', 'lr']), trigger=log_interval)  # ログを出力
     trainer.extend(extensions.ProgressBar(update_interval=10))  # プログレスバー
 
-    if args.resume:
-        chainer.serializers.load_npz(args.resume, trainer)
-
     # 学習の実行
+    print('run learn')
     trainer.run()
 
     # 学習後のモデルの保存
