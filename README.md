@@ -24,7 +24,7 @@ python test.py --img ../test_image/<追加した画像へのパス>
 
 実行を行うと，以下のような結果が出力されます．
 ```
-Image name is : <追加した画像へのパス>
+Image name is : ../test_image/<追加した画像へのパス>
 Type1 of this image is : water
 Type2 of this image is : none
 ```
