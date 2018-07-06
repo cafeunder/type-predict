@@ -12,7 +12,7 @@ size = 1024 * 1024 * 99  # 99MB
 def divide_model(filename, outdir):
     file = open(filename, 'rb')
     bin = file.read()
-    print(len(bin))
+    print('model size : ' + str(len(bin)))
 
     chunk = [bin[i:i + size] for i in range(0, len(bin), size)]
 

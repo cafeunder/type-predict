@@ -12,7 +12,7 @@ def merge_model(basename, modelname):
     chunk_list = glob.glob(basename + '/chunk*')
     dst = open(modelname, 'wb')
     for chunk in chunk_list:
-        print(chunk)
+        print('chunk : ' + chunk)
         file = open(chunk, 'rb')
         bin = file.read()
         dst.write(bin)
