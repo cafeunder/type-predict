@@ -6,27 +6,28 @@ import glob
 import numpy as np
 import cv2
 
-def add_background(src):
+
+def add_background(img):
     # マスクの取り出し
-    mask = cv2.cvtColor(src[:,:,3], cv2.COLOR_GRAY2RGB)
+    mask = cv2.cvtColor(img[:, :, 3], cv2.COLOR_GRAY2RGB)
     mask = mask / 255.0
 
     # 次元を背景に合わせるため、アルファチャンネルなしの画像に変換
-    src = cv2.cvtColor(src, cv2.COLOR_RGBA2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
 
     # 背景を作成
-    background = np.zeros(src.shape, dtype=np.float64)
+    background = np.zeros(img.shape, dtype=np.float64)
     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    cv2.rectangle(background, (0, 0), (src.shape[1], src.shape[0]), color, -1)
+    cv2.rectangle(background, (0, 0), (img.shape[1], img.shape[0]), color, -1)
 
     # 画像を背景にのせる
     background *= 1 - mask
-    background += src * mask
+    background += img * mask
 
     return background
 
 
-def scale_augmentation(image):
+def scale_augmentation(img):
     """
     Scale Augmentationを行う
     ついでにHorizontal Flipもする
@@ -35,18 +36,18 @@ def scale_augmentation(image):
     RESIZE_MIN, RESIZE_MAX = 168, 280
 
     # 元画像の読み込みとサイズの取得
-    src_width = len(image[0])
-    src_height = len(image)
-    src = np.array(image)
+    width = len(img[0])
+    height = len(img)
 
     # [RESIZE_MIN, RESIZE_MAX]の範囲でランダムにリサイズする
     size = random.randint(RESIZE_MIN, RESIZE_MAX)
 
     # 長辺方向の比率を計算
-    rate = size / float(src_height) if (src_height > src_width) else size / float(src_width)
+    rate = size / float(height) if (height > width) else size / float(width)
 
     # 元画像を拡大
-    expand = cv2.resize(image, (int(src_width * rate + 0.5), int(src_height * rate + 0.5)))
+    expand = cv2.resize(img, (int(width * rate + 0.5),
+                              int(height * rate + 0.5)))
     exp_width = len(expand[0])
     exp_height = len(expand)
 
@@ -70,6 +71,7 @@ def scale_augmentation(image):
     dst = np.zeros((SIZE, SIZE, 4), dtype='uint8')
     dst[y:y + exp_height, x:x + exp_width] = expand
     return dst
+
 
 if __name__ == '__main__':
     NO_OF_POKE_EACHTYPE = 10000
@@ -125,11 +127,15 @@ if __name__ == '__main__':
             filename = random.choice(image_list)
             img_name = os.path.basename(filename)
 
-            if not os.path.exists(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0]):
-                os.makedirs(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0])
+            if not os.path.exists(args.dstdir + '/type' + str(args.type)
+                                  + '/' + img_name.split('_')[0]):
+                os.makedirs(args.dstdir + '/type' + str(args.type)
+                            + '/' + img_name.split('_')[0])
 
-            src = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
-            image = add_background(scale_augmentation(src))
+            image = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
+            image = add_background(scale_augmentation(image))
 
-            cv2.imwrite(args.dstdir + '/type' + str(args.type) + '/' + img_name.split('_')[0]
-                        + '/' + img_name.split('_')[0] + '_' + str(i) + '.png', image)
+            cv2.imwrite(args.dstdir + '/type' + str(args.type)
+                        + '/' + img_name.split('_')[0]
+                        + '/' + img_name.split('_')[0]
+                        + '_' + str(i) + '.png', image)
