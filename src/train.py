@@ -62,7 +62,7 @@ def make_dataset(learn_type, train_file, val_file, label_file, dict_dir,
             else:
                 poke_to_type[record[0]] = 'none'
     # （ポケモンの画像のパス，タイプ番号）をデータとする訓練データとテストデータを作成
-    cnts = [0 for i in range(len(type_list))]
+    cnts = [0 for _ in range(len(type_list))]
     for poke_name in poke_names:
         print(poke_name)
         # 各ポケモンの画像を全て取得
@@ -132,7 +132,8 @@ def main():
     make_dataset(args.learn_type,
                  args.root + '/type' + str(args.learn_type) + '/train.txt',
                  args.root + '/type' + str(args.learn_type) + '/test.txt',
-                 '../labels.txt', '../dictionary.csv', args.imgdir + '/type' + str(args.learn_type) + '/')
+                 '../labels.txt', '../dictionary.csv', args.imgdir + '/type'
+                 + str(args.learn_type) + '/')
 
     # 学習に用いる画像の平均画像を計算
     compute_mean(args.root + '/type' + str(args.learn_type) + '/train.txt',
