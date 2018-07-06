@@ -120,8 +120,9 @@ def main():
     parser.add_argument('--img', help='Path to image file')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--all', default=False,
+    parser.add_argument('--all', action='store_true',
                         help='Whether to test all images or one image')
+    parser.set_defaults(all=False)
     args = parser.parse_args()
 
     # 学習済みモデルの読み込み
@@ -130,6 +131,8 @@ def main():
     model_type2, out_size_type2 = make_model(args.root + '/type2/model_final',
                                              2)
     if args.gpu >= 0:
+        # GPUを使用する場合，GPUメソッドを指定
+        chainer.cuda.get_device(args.gpu).use()
         model_type1.to_gpu()
         model_type2.to_gpu()
 
