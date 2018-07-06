@@ -1,8 +1,12 @@
 # coding:utf-8
+"""
+ポケモンの画像データの縦横比をチェックするプログラム
+指定したフォルダ直下にある各ポケモンフォルダ毎に，画像のアスペクト比の平均を計算
+"""
+import cv2
 import os
 import argparse
 import glob
-from create_train_image import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test Learned Model')
@@ -54,4 +58,3 @@ if __name__ == '__main__':
                 total_rate += float(height) / width
                 count += 1
             print(poke + ' : ' + str(total_rate / count))
-    print(count)
